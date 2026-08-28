@@ -1,25 +1,44 @@
-# Temporários e Backups do Editor Construct 3
-*.backup*
-*.autosave*
-*.tmp
-*.c3p.tmp
+# 1. Dependências (NUNCA comitar - são baixadas via gerenciador de pacotes)
+node_modules/
+vendor/
+.pnp
+.pnp.js
 
-# Builds e Exportações Locais
-export/
-exports/
-build/
-builds/
-www/
+# 2. Variáveis de Ambiente e Segredos (chaves de API, senhas de banco)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# 3. Builds e Arquivos Gerados
 dist/
+build/
+out/
+.next/
+.nuxt/
+*.tsbuildinfo
 
-# Logs e Dados de Debug
+# 4. Logs e Depuração
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.cache/
+pnpm-debug.log*
 
-# Arquivos do Sistema Operacional
+# 5. Arquivos de Editores e IDEs
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 6. Arquivos do Sistema Operacional
 .DS_Store
 Thumbs.db
-Desktop.ini
-$RECYCLE.BIN/
