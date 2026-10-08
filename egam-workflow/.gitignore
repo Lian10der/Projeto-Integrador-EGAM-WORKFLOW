@@ -6,7 +6,7 @@ vendor/
 
 # 2. Variáveis de Ambiente e Segredos (chaves de API, senhas de banco)
 .env
-.env.local
+.env.lo'cal
 .env.development.local
 .env.test.local
 .env.production.local
