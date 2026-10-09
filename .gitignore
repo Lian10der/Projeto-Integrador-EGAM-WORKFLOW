@@ -11,14 +11,18 @@ vendor/
 .env.test.local
 .env.production.local
 *.env
+*.env.*
 
-# 3. Builds e Arquivos Gerados
+# 3. Builds, Caches e Arquivos Gerados
 dist/
 build/
 out/
 .next/
 .nuxt/
+.cache/
+.eslintcache
 *.tsbuildinfo
+coverage/
 
 # 4. Logs e Depuração
 logs/
@@ -39,6 +43,7 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
-# 6. Arquivos do Sistema Operacional
+# 6. Arquivos do Sistema Operacional e Temporários
 .DS_Store
 Thumbs.db
+*.tmp
