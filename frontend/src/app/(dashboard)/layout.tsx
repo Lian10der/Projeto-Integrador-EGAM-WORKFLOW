@@ -6,12 +6,10 @@ import { Sidebar } from "@/components/layout/Sidebar";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-
     <div className="dashboard-layout">
       <Header />
-      <Sidebar />
-
+        <Sidebar />
         <main className="menu">{children}</main>
-    </div>
+      </div>
   );
 }

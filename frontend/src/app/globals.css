@@ -55,21 +55,23 @@ a {
   display: grid;
   grid-template-areas:
     "header header"
-    "sidebar content"
+    "sidebar menu"
     "footer footer";
-  grid-template-columns: 1fr 3fr;
+  grid-template-columns: 1fr 4fr;
+  grid-auto-rows: 1fr 10fr;
   min-height: 100vh;
   background: var(--background);
+  margin: 1em;
 }
 
 .sidebar {
   background: var(--sidebar-bg);
   color: var(--sidebar-text);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
   font-family: var(--font-montserrat), sans-serif;
 }
 
@@ -140,7 +142,7 @@ a {
 
 .sidebar__link:hover {
   color: var(--sidebar-active);
-  background-color: #1F1F1F;
+  background-color: #1f1f1f;
 }
 
 .sidebar__link--active {
@@ -167,11 +169,12 @@ a {
   border-radius: 20px;
   flex-direction: column;
   min-width: 0;
+  border: 1px solid var(--border);
 }
 
 .header {
   height: 80px;
-  padding: 0 28px;
+  padding: 0 1em;
   grid-area: header;
   text-align: center;
   display: flex;
@@ -189,18 +192,23 @@ a {
 .dashboard-header__actions {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   flex: 1;
-  justify-content: flex-end;
+}
+
+.search-box-container{
+  display: flex;
+  gap: 1rem;
 }
 
 .search-box {
+  display: flex;
+  align-items: center;
   width: 640px;
   height: 38px;
   border: 1px solid var(--border);
   border-radius: 7.85px;
-  display: flex;
-  align-items: center;
   gap: 9px;
   padding: 0 12px;
   color: #bcbcbc;
@@ -218,6 +226,10 @@ a {
 
 .search-box input::placeholder {
   color: #bcbcbc;
+}
+
+.header-icon-container{
+  display: flex;
 }
 
 .header-icon {
@@ -247,8 +259,6 @@ a {
   background: #1f1f1f;
 }
 
-
-
 /* Secoes de pagina */
 .page-section {
   display: flex;
@@ -275,14 +285,13 @@ a {
   color: #f5f5f5;
 }
 
-
 .page-section__header p {
   color: #616161;
   font-size: 16px;
 }
 
-.page-section__menu{
-    padding: 2em;
+.page-section__menu {
+  padding: 2em;
 }
 
 /* Botoes */
