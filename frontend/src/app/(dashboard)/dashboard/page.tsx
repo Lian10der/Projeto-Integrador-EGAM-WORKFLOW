@@ -1,10 +1,12 @@
-export default function DashboardPage() {
+import { PageContainer } from "@/components/ui/PageContainer";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { PageContent } from "@/components/ui/PageContent";
+
+export default function Page() {
   return (
-    <div className="page-section">
-      <div className="page-section__header">
-        <h2 >Dashboard</h2>
-        <p>Bem-vindo ao painel administrativo do IGAM Workflow.</p>
-      </div>
-    </div>
+    <PageContainer>
+      <PageHeader title="Dashboard" description="Bem-vindo ao painel administrativo do IGAM Workflow." />
+      <PageContent>{/* Conteúdo da página será desenvolvido aqui. */}</PageContent>
+    </PageContainer>
   );
 }

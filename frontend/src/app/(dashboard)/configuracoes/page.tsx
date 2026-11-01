@@ -1,12 +1,12 @@
-export default function ConfiguracoesPage() {
+import { PageContainer } from "@/components/ui/PageContainer";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { PageContent } from "@/components/ui/PageContent";
+
+export default function Page() {
   return (
-    <div className="page-section">
-      <div className="page-section__header">
-        <h2>Configurações</h2>
-        <p>Configurações do sistema (em desenvolvimento).</p>
-      </div>
-      <div className="page-section__menu">
-      </div>
-    </div>
+    <PageContainer>
+      <PageHeader title="Configurações" description="Configurações do sistema (em desenvolvimento)." />
+      <PageContent>{/* Conteúdo da página será desenvolvido aqui. */}</PageContent>
+    </PageContainer>
   );
 }

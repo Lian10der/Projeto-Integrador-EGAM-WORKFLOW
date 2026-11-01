@@ -1,10 +1,12 @@
-export default function InvestimentosPage() {
+import { PageContainer } from "@/components/ui/PageContainer";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { PageContent } from "@/components/ui/PageContent";
+
+export default function Page() {
   return (
-    <div className="page-section">
-      <div className="page-section__header">
-        <h2>Investimentos</h2>
-        <p>Área em desenvolvimento.</p>
-      </div>
-    </div>
+    <PageContainer>
+      <PageHeader title="Investimentos" description="Área em desenvolvimento." />
+      <PageContent>{/* Conteúdo da página será desenvolvido aqui. */}</PageContent>
+    </PageContainer>
   );
 }

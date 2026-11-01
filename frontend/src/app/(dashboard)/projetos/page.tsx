@@ -3,10 +3,13 @@
 import { useMemo, useState } from "react";
 import { PROJETOS_MOCK } from "@/lib/projetos-mock";
 import { ProjetoCard } from "@/components/projetos/ProjetoCard";
-// import {
-//   ProjetoFiltros,
-//   type FiltrosState,
-// } from "@/components/projetos/ProjetoFiltros";
+import {
+  ProjetoFiltros,
+  type FiltrosState,
+} from "@/components/projetos/ProjetoFiltros";
+import { PageContainer } from "@/components/ui/PageContainer";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { PageContent } from "@/components/ui/PageContent";
 
 const FILTROS_INICIAIS: FiltrosState = {
   busca: "",
@@ -25,42 +28,38 @@ export default function ExplorarProjetosPage() {
         termo === "" ||
         projeto.titulo.toLowerCase().includes(termo) ||
         projeto.osc.toLowerCase().includes(termo);
-
       const matchStatus =
         filtros.status === "todos" || projeto.status === filtros.status;
-
       const matchLei =
         filtros.lei === "todas" || projeto.leiIncentivo === filtros.lei;
-
       const matchArea =
         filtros.area.trim() === "" ||
-        projeto.areaAtuacao.toLowerCase().includes(filtros.area.toLowerCase());
+        projeto.areaAtuacao.toLowerCase().includes(filtros.area.trim().toLowerCase());
 
       return matchBusca && matchStatus && matchLei && matchArea;
     });
   }, [filtros]);
 
   return (
-    <div className="page-section">
-      <div className="page-section__header">
-        <h2>Explorar Projetos</h2>
-      </div>
-
-      <div className="page-section__menu">
-        <h2>Projetos</h2>
-        <p>6 projetos disponíveis para aporte de incentivo fiscal</p>
-        {/* <ProjetoFiltros filtros={filtros} onChange={setFiltros} /> */}
-
-        <div className="projeto-grid">
-          {projetosFiltrados.map((projeto) => (
-            <ProjetoCard key={projeto.id} projeto={projeto} />
-          ))}
-        </div>
-
-        {projetosFiltrados.length === 0 ? (
-          <p className="empty-state">Nenhum projeto encontrado com os filtros atuais.</p>
-        ) : null}
-      </div>
-    </div>
+    <PageContainer>
+      <PageHeader
+        title="Explorar Projetos"
+        description={`${projetosFiltrados.length} projeto(s) disponível(is) para aporte de incentivo fiscal.`}
+      />
+      <PageContent>
+        <ProjetoFiltros filtros={filtros} onChange={setFiltros} />
+        {projetosFiltrados.length > 0 ? (
+          <div className="projeto-grid">
+            {projetosFiltrados.map((projeto) => (
+              <ProjetoCard key={projeto.id} projeto={projeto} />
+            ))}
+          </div>
+        ) : (
+          <p className="empty-state">
+            Nenhum projeto encontrado com os filtros atuais.
+          </p>
+        )}
+      </PageContent>
+    </PageContainer>
   );
 }

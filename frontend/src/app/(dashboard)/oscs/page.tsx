@@ -1,10 +1,12 @@
-export default function OscsPage() {
+import { PageContainer } from "@/components/ui/PageContainer";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { PageContent } from "@/components/ui/PageContent";
+
+export default function Page() {
   return (
-    <div className="page-section">
-      <div className="page-section__header">
-        <h2>OSCs</h2>
-        <p>Área reservada para consulta das OSCs (em desenvolvimento).</p>
-      </div>
-    </div>
+    <PageContainer>
+      <PageHeader title="OSCs" description="Área reservada para consulta das OSCs (em desenvolvimento)." />
+      <PageContent>{/* Conteúdo da página será desenvolvido aqui. */}</PageContent>
+    </PageContainer>
   );
 }

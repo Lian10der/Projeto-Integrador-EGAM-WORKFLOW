@@ -1,10 +1,15 @@
+import { PageContainer } from "@/components/ui/PageContainer";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { PageContent } from "@/components/ui/PageContent";
+
 export default function ClientesPage() {
   return (
-    <div className="page-section">
-      <div className="page-section__header">
-        <h2>Clientes</h2>
-        <p>Área em desenvolvimento.</p>
-      </div>
-    </div>
+    <PageContainer>
+      <PageHeader
+        title="Clientes"
+        description="Gerencie os clientes cadastrados no sistema."
+      />
+      <PageContent>{/* Conteúdo da página será desenvolvido aqui. */}</PageContent>
+    </PageContainer>
   );
 }
