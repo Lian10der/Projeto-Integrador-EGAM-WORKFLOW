@@ -1,13 +1,10 @@
-import { ProjetoForm } from "@/components/projetos/ProjetoForm";
+<PageContainer>
+  <PageHeader
+    title="Explorar Projetos"
+    description="Encontre projetos disponíveis para aporte."
+  />
 
-export default function CriarProjetoPage() {
-  return (
-    <div className="page-section">
-      <div className="page-section__header">
-        <h2>Criar Projeto</h2>
-        <p>Cadastre uma nova proposta de projeto social.</p>
-        <ProjetoForm />
-      </div>
-    </div>
-  );
-}
+  <PageContent>
+    {/* Filtros, cards e demais componentes */}
+  </PageContent>
+</PageContainer>
