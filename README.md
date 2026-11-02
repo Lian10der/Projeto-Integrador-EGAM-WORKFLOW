@@ -1,83 +1,83 @@
-# E-GAM Workflow
+# Sistema de Gestão e Triagem de Projetos (E-GAM Workflow)
  
-Sistema web desenvolvido como Projeto Integrador da UNISATC com o objetivo de centralizar, organizar e facilitar o processo de submissão, análise e avaliação de projetos sociais recebidos pelo IGAM.
+Sistema web desenvolvido como Projeto Integrador da UNISATC com o objetivo de centralizar, organizar e facilitar o processo de submissão, análise e avaliação de projetos sociais recebidos pelo Instituto Genésio Antônio Mendes (IGAM).
  
 > Projeto Integrador — Engenharia de Software, UNISATC (Centro Universitário SATC), 2026.
 
-## 📌 Sobre o projeto
+## Sobre o projeto
 
-O **E-GAM Workflow** permite que uma OSC envie uma proposta de projeto social por meio de um formulário público, anexando os documentos necessários e recebendo um protocolo único para acompanhamento da submissão.
+O **E-GAM Workflow** permite que uma Organização da Sociedade Civil (OSC) envie uma proposta de projeto social por meio de um formulário público e intuitivo, anexando os documentos obrigatórios e recebendo um protocolo único para acompanhamento da submissão.
 
 A equipe administrativa do IGAM possui acesso a um ambiente restrito onde pode:
 
-* Visualizar projetos submetidos;
-* Filtrar propostas por diferentes critérios;
-* Consultar os dados das OSCs;
-* Visualizar documentos PDF diretamente pela plataforma;
-* Atualizar o status das propostas;
-* Registrar pareceres e observações;
-* Classificar e avaliar projetos;
-* Definir o valor de aporte financeiro aprovado.
+- Visualizar projetos submetidos;
+- Filtrar propostas por diferentes critérios (Lei de Incentivo, área, status e período);
+- Consultar os dados cadastrais das OSCs;
+- Visualizar documentos PDF diretamente pela plataforma;
+- Atualizar o status das propostas;
+- Registrar pareceres, observações e notas técnicas;
+- Classificar e ranquear projetos;
+- Definir o valor de aporte financeiro aprovado.
 
-O projeto foi desenvolvido com foco em uma arquitetura web modular e enxuta, adequada ao escopo de um MVP acadêmico.
+O projeto segue rigorosamente o manual de identidade visual e as diretrizes gráficas atualizadas do IGAM, adotando uma arquitetura web modular e enxuta, perfeitamente adequada ao escopo de um MVP acadêmico.
 
-## 🚀 Funcionalidades
+## Funcionalidades
 
 ### Para OSCs
 
-* [x] Acesso público ao formulário de submissão
-* [x] Formulário estruturado em etapas
-* [x] Cadastro de informações da instituição
-* [x] Seleção da Lei de Incentivo e área de atuação
-* [x] Cadastro das informações técnicas do projeto
-* [x] Definição dos valores financeiros
-* [x] Upload de documentos em PDF
-* [x] Validação dos campos obrigatórios
-* [x] Validação do tamanho dos arquivos
-* [x] Revisão dos dados antes do envio
-* [x] Geração de protocolo único
+- [x] Acesso público ao formulário de submissão (sem exigência de cadastro prévio)
+- [x] Formulário estruturado em etapas orientadas
+- [x] Cadastro de informações da instituição
+- [x] Seleção da Lei de Incentivo e área de atuação
+- [x] Cadastro das informações técnicas e escopo do projeto
+- [x] Definição dos valores financeiros (total, solicitado e aprovado)
+- [x] Upload de documentos essenciais em PDF
+- [x] Validação dos campos obrigatórios e verificação de CNPJ válido
+- [x] Validação e controle do tamanho dos arquivos
+- [x] Revisão dos dados antes do envio final
+- [x] Geração de protocolo único de submissão
 
 ### Para administradores do IGAM
 
-* [x] Autenticação por e-mail e senha
-* [x] Dashboard de projetos
-* [x] Filtros por Lei de Incentivo, área, status e período
-* [x] Visualização detalhada dos projetos
-* [x] Visualização de documentos PDF
-* [x] Atualização do status dos projetos
-* [x] Registro de pareceres e observações
-* [x] Classificação das propostas
-* [x] Registro do valor de aporte aprovado
+- [x] Autenticação segura por e-mail e senha
+- [x] Painel administrativo (Dashboard) de projetos
+- [x] Filtros dinâmicos por Lei de Incentivo, área, status e período
+- [x] Visualização detalhada dos projetos e dados das OSCs
+- [x] Leitura e consulta de documentos PDF anexados
+- [x] Atualização de status do fluxo de triagem
+- [x] Registro de pareceres e observações técnicas
+- [x] Classificação e ranqueamento das propostas
+- [x] Registro do valor de aporte financeiro concedido
 
-## 🛠️ Tecnologias
+## Tecnologias
 
 ### Front-end
 
-* **HTML**
-* **CSS**
-* **React**
-* **Next.js**
+- **HTML / CSS**
+- **React**
+- **Next.js**
+- **Figma** (Prototipagem de UI/UX)
 
-O React será utilizado para construção da interface por meio de componentes reutilizáveis, enquanto o Next.js fornece a estrutura da aplicação web e recursos adicionais para organização das páginas.
+O React é utilizado para a construção da interface por meio de componentes reutilizáveis, enquanto o Next.js fornece a estrutura da aplicação web e os recursos de rotas e páginas.
 
 ### Back-end
 
-* **Node.js**
-* **TypeScript**
-* **Express**
-* Bibliotecas para processamento de arquivos PDF
+- **Node.js**
+- **TypeScript**
+- **Express**
+- Bibliotecas para manipulação e processamento de arquivos PDF
 
-O Node.js será responsável pelo processamento das requisições, aplicação das regras de negócio, autenticação, gerenciamento das submissões e comunicação com o banco de dados. O Express será utilizado para estruturar a API e suas rotas.
+O Node.js gerencia as requisições, a aplicação das regras de negócio, a autenticação e a comunicação com a base de dados, enquanto o Express estrutura a API RESTful e suas rotas.
 
 ### Banco de dados
 
-* **PostgreSQL**
+- **PostgreSQL / Supabase**
 
-O PostgreSQL será utilizado para armazenamento dos dados da aplicação, aproveitando seus recursos relacionais, suporte a JSONB e desempenho em operações de consulta e atualização.
+O PostgreSQL é utilizado para o armazenamento relacional dos dados da aplicação, garantindo integridade referencial, segurança e alto desempenho nas consultas e atualizações.
 
-## 🏗️ Arquitetura
+## Arquitetura
 
-De forma geral, o sistema é organizado em três partes principais:
+O sistema é estruturado de forma desacoplada em três camadas principais:
 
 ```text
 ┌─────────────────────────────┐
@@ -85,7 +85,7 @@ De forma geral, o sistema é organizado em três partes principais:
 │     React + Next.js         │
 └──────────────┬──────────────┘
                │
-               │ HTTP / API
+               │ HTTP / API REST
                ▼
 ┌─────────────────────────────┐
 │          Back-end           │
@@ -96,101 +96,60 @@ De forma geral, o sistema é organizado em três partes principais:
                ▼
 ┌─────────────────────────────┐
 │         PostgreSQL          │
-│      Banco de Dados         │
+│      Banco Relacional       │
 └─────────────────────────────┘
 ```
 
-Os documentos enviados pelas OSCs também são processados e associados aos respectivos projetos, permitindo que sejam consultados pela equipe administrativa conforme as permissões do sistema.
-
-## 🔄 Fluxo do sistema
+Os documentos enviados pelas OSCs são processados no backend e associados aos respectivos registros de projetos, permitindo a consulta segura pela equipe administrativa do IGAM.
 
 ## Fluxo do sistema
 
-OSC
- ↓
-Preenche proposta
- ↓
-Anexa documentos
- ↓
-Revisa e envia
- ↓
-Recebe protocolo
- ↓
-IGAM analisa
- ↓
-Classifica projeto
- ↓
-Registra parecer
- ↓
-Aprova ou reprova
+```text
+OSC acessa formulário público (sem login)
+ └─► Preenche dados da instituição e do projeto
+      └─► Anexa documentos obrigatórios em PDF
+           └─► Revisa informações e envia
+                └─► Recebe protocolo único de submissão
+                     └─► Equipe do IGAM acessa painel restrito (Login)
+                          └─► Analisa, filtra e gerencia o projeto
+                               └─► Registra parecer técnico e define aporte financeiro
+```
 
-Esse fluxo corresponde às jornadas de usuário definidas para OSCs e administradores do IGAM no projeto.
-
-## 📋 Requisitos principais
+## Requisitos principais
 
 ### Requisitos de negócio
 
-* Centralizar o recebimento de projetos sociais.
-* Disponibilizar submissão pública sem necessidade de cadastro prévio.
-* Exigir o enquadramento da proposta em uma Lei de Incentivo e área de atuação.
-* Fornecer uma plataforma unificada para apoiar a avaliação das propostas.
+- Centralizar o recebimento de projetos sociais do IGAM.
+- Disponibilizar submissão pública direta para as OSCs, sem barreiras de cadastro prévio.
+- Exigir enquadramento da proposta em Leis de Incentivo vigentes e áreas de atuação padronizadas.
+- Fornecer uma plataforma unificada de triagem para apoiar a comissão avaliadora.
 
 ### Requisitos não funcionais
 
-* Interface responsiva e intuitiva;
-* Controle de acesso às áreas administrativas;
-* Limitação do tamanho dos arquivos enviados;
-* Identificação única dos documentos;
-* Arquitetura modular e de fácil manutenção;
-* Disponibilidade do sistema.
+- Interface limpa, responsiva e alinhada à nova identidade visual do IGAM;
+- Restrição rigorosa de acesso às telas administrativas por autenticação;
+- Limitação de tamanho para upload de anexos;
+- Integridade e rastreabilidade dos dados por meio de banco relacional;
+- Arquitetura modular e de fácil manutenção para o MVP.
 
-## 👥 Equipe
+## Equipe
 
-| Integrante               | Responsabilidade          |
-| ------------------------ | ------------------------- |
-| Anthony Borges           | Back-end                  |
-| Yuri Machado             | Banco de Dados / Back-end |
-| Liander de Almeida Nunes | Scrum Master / Front-end  |
-| Kenzo Hara               | UI/UX / Front-end         |
+| Integrante               | Responsabilidade           |
+| ------------------------ | -------------------------- |
+| Anthony Borges           | Back-end / Gestão de Custos|
+| Yuri Machado             | Banco de Dados / Back-end  |
+| Liander de Almeida Nunes | Scrum Master / Front-end   |
+| Kenzo Hara               | UI/UX / Front-end          |
 
-## 📁 Estrutura do projeto
-
-> A estrutura abaixo será atualizada conforme o desenvolvimento do sistema.
-
-```text
-Projeto-Integrador-EGAM-WORKFLOW/
-├── frontend/
-│   ├── app/
-│   ├── components/
-│   ├── public/
-│   └── ...
-│
-├── backend/
-│   ├── src/
-│   ├── routes/
-│   ├── controllers/
-│   ├── services/
-│   └── ...
-│
-├── database/
-│   └── ...
-│
-├── docs/
-│   └── ...
-│
-└── README.md
-```
-
-## ⚙️ Instalação
+## Instalação e Execução
 
 ### Pré-requisitos
 
-Antes de executar o projeto, certifique-se de possuir instalado:
-
-* Node.js
-* npm
-* PostgreSQL
-* Git
+Certifique-se de possuir instalado em sua máquina:
+- Node.js
+- npm ou yarn
+- PostgreSQL
+- Git
 
 ### Clone o repositório
 
@@ -203,49 +162,29 @@ cd Projeto-Integrador-EGAM-WORKFLOW
 ### Instale as dependências
 
 ```bash
+# Na raiz ou nos diretórios específicos de backend/frontend
 npm install
 ```
 
-> Os comandos de instalação e execução poderão ser ajustados conforme a estrutura definitiva do projeto.
+### Variáveis de ambiente
 
-## ▶️ Execução
+Crie um arquivo `.env` configurando as variáveis necessárias para a execução:
 
-Após configurar o banco de dados e as variáveis de ambiente:
+```env
+SUPABASE_URL=
+SUPABASE_KEY=
+PORT=
+```
+
+### Inicialização em ambiente de desenvolvimento
 
 ```bash
 npm run dev
 ```
 
-A aplicação será executada em ambiente de desenvolvimento.
+## Status do Projeto
 
-## 🔐 Variáveis de ambiente
+**Em desenvolvimento ativo** (Codificação e Infraestrutura do Sistema).
 
-Crie um arquivo `.env` na raiz do projeto:
-
-```env
-DATABASE_URL=
-PORT=
-JWT_SECRET=
-```
-
-> As variáveis serão definidas conforme a implementação final do back-end.
-
-## 📌 Status
-
-🚧 **Em desenvolvimento**
-
-Projeto Integrador — Sistema Web
+Projeto Integrador — Sistema Web de Gestão  
 UNISATC — 2026
-
-## 📚 Documentação
-
-A documentação do projeto contempla:
-
-* Definição das tecnologias;
-* Requisitos de negócio;
-* Requisitos funcionais;
-* Requisitos não funcionais;
-* Jornadas dos usuários;
-* Gestão do projeto.
-
-O gerenciamento das tarefas e do backlog é realizado por meio do **GitHub Projects**.
