@@ -1,0 +1,76 @@
+.projectCard {
+  background: #1c2128;
+  border: 1px solid #2d333b;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  height: 100%;
+}
+
+.projectCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border-color: #3d444d;
+}
+
+.cardBody {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.tagsRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.subTag {
+  background: #12161c;
+  border: 1px solid #2d333b;
+  color: #8b949e;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.projectTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f0f6fc;
+  line-height: 1.3;
+  margin-top: 4px;
+}
+
+.institution {
+  font-size: 13px;
+  color: #8b949e;
+}
+
+/* Botão dentro do card */
+.btnDetalhes {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  background-color: transparent;
+  color: #f0f6fc;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s ease;
+}
+
+.btnDetalhes:hover {
+  background-color: #21262d;
+  border-color: #8b949e;
+}
