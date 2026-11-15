@@ -22,7 +22,6 @@ export default function UsuariosPage() {
   const [modalAberto, setModalAberto] = useState(false);
   const [editando, setEditando] = useState<Usuario | null>(null);
 
-  // Form states
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -63,7 +62,7 @@ export default function UsuariosPage() {
     setEditando(usuario);
     setNome(usuario.nome);
     setEmail(usuario.email);
-    setSenha(''); // Senha em branco na edição
+    setSenha('');
     setStatus(usuario.status);
     setModalAberto(true);
   };
@@ -177,7 +176,6 @@ export default function UsuariosPage() {
         )}
       </PageContent>
 
-      {/* MODAL CRIAR/EDITAR */}
       {modalAberto && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ backgroundColor: 'var(--card)', padding: '32px', borderRadius: '12px', width: '100%', maxWidth: '500px', border: '1px solid var(--border)' }}>

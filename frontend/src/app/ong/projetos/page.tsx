@@ -35,7 +35,7 @@ export default function ProjetosOngPage() {
 
   const sair = useCallback(() => {
     localStorage.removeItem('igam_token');
-    router.push('/ong/entrar');
+    router.push('/');
   }, [router]);
 
   const carregar = useCallback(async () => {
@@ -49,7 +49,6 @@ export default function ProjetosOngPage() {
         fetch(`${API_URL}/projetos/leis-incentivo`, { headers: cabecalhos() }),
       ]);
 
-      // Sem login válido de ONG: volta para a tela de entrada
       if ([resOng, resProjetos].some((r) => r.status === 401 || r.status === 403)) {
         sair();
         return;
@@ -114,7 +113,6 @@ export default function ProjetosOngPage() {
         </div>
       )}
 
-      {/* NOVO PROJETO */}
       <Modal isOpen={novoAberto} onClose={() => setNovoAberto(false)} title="Cadastrar Novo Projeto" maxWidth="700px">
         <ProjetoForm
           rota="/ong/projetos"
@@ -126,7 +124,6 @@ export default function ProjetosOngPage() {
         />
       </Modal>
 
-      {/* EDITAR PROJETO */}
       <Modal isOpen={!!editando} onClose={() => setEditando(null)} title="Editar Projeto" maxWidth="700px">
         {editando && (
           <ProjetoForm
@@ -142,7 +139,6 @@ export default function ProjetosOngPage() {
         )}
       </Modal>
 
-      {/* DETALHES */}
       <Modal isOpen={!!detalhe} onClose={() => setDetalhe(null)} title={detalhe?.titulo || 'Detalhes do Projeto'} maxWidth="800px">
         {detalhe && <ProjetoDetalhe projeto={detalhe} leis={leis} base="/ong/projetos" />}
       </Modal>

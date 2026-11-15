@@ -2,82 +2,209 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './page.module.css';
+import { API_URL } from '@/lib/sessao';
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [mostrarSenha, setMostrarSenha] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setErro(null);
 
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, senha }),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'E-mail ou senha inválidos.');
-      }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'E-mail ou senha inválidos.');
 
       localStorage.setItem('igam_token', data.token);
-      router.push('/');
+      router.push('/home');
     } catch (err: any) {
-      setError(err.message || 'Erro ao conectar com o servidor.');
+      setErro(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
-    <div className={styles.loginContainer}>
-      <div className={styles.loginCard}>
-        <div className={styles.logoArea}>
-          <h1>Instituto Genésio Antônio Mendes</h1>
-          <p>Entre com suas credenciais para gerenciar projetos</p>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0e1116' }}>
+      
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '48px',
+          backgroundColor: '#1a1d21',
+        }}
+      >
+        <div style={{ width: '100%', maxWidth: '380px' }}>
+          
+          <div style={{ marginBottom: '40px' }}>
+            <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#e6edf3', lineHeight: 1.1, marginBottom: '12px' }}>
+              Instituto Genésio<br />Antônio Mendes
+            </h1>
+            <p style={{ fontSize: '14px', color: '#adb5bd' }}>
+              Digite o usuário e senha do administrador
+            </p>
+          </div>
+
+          {erro && <p className="form-error" style={{ marginBottom: '16px' }}>{erro}</p>}
+
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', color: '#adb5bd', marginBottom: '8px' }}>
+                Nome do Administrador
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Usuário ou e-mail"
+                required
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  backgroundColor: '#212529',
+                  border: '1px solid #343a40',
+                  borderRadius: '8px',
+                  color: '#e6edf3',
+                  fontSize: '14px',
+                  outline: 'none',
+                  transition: 'border-color 0.2s',
+                }}
+                onFocus={(e) => e.target.style.borderColor = '#adb5bd'}
+                onBlur={(e) => e.target.style.borderColor = '#343a40'}
+              />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', color: '#adb5bd', marginBottom: '8px' }}>
+                Senha do Administrador
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={mostrarSenha ? 'text' : 'password'}
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  placeholder="••••••••••••"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    backgroundColor: '#212529',
+                    border: '1px solid #343a40',
+                    borderRadius: '8px',
+                    color: '#e6edf3',
+                    fontSize: '14px',
+                    outline: 'none',
+                    transition: 'border-color 0.2s',
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#adb5bd'}
+                  onBlur={(e) => e.target.style.borderColor = '#343a40'}
+                />
+                <button
+                  type="button"
+                  onClick={() => setMostrarSenha(!mostrarSenha)}
+                  style={{
+                    position: 'absolute',
+                    right: '16px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#adb5bd',
+                    cursor: 'pointer',
+                    fontSize: '16px',
+                    padding: '4px',
+                  }}
+                >
+                  {mostrarSenha ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                width: '100%',
+                padding: '16px',
+                backgroundColor: '#00c4cc',
+                color: '#0e1116',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: 700,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.7 : 1,
+                marginTop: '8px',
+                letterSpacing: '1px',
+              }}
+            >
+              {loading ? 'ENTRANDO...' : 'ENTRAR'}
+            </button>
+          </form>
+
+          <p style={{ fontSize: '11px', color: '#6c757d', textAlign: 'center', marginTop: '60px' }}>
+            Instituto Genésio Antônio Mendes 2026 © All rights reserved.
+          </p>
         </div>
-
-        {error && <div className={styles.errorBox}>{error}</div>}
-
-        <form onSubmit={handleLogin} className={styles.form}>
-          <div className={styles.formGroup}>
-            <label>E-mail</label>
-            <input
-              type="email"
-              required
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={styles.input}
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label>Senha</label>
-            <input
-              type="password"
-              required
-              placeholder="••••••••"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              className={styles.input}
-            />
-          </div>
-
-          <button type="submit" disabled={loading} className={styles.btnLogin}>
-            {loading ? 'Autenticando...' : 'Acessar Sistema'}
-          </button>
-        </form>
       </div>
+
+      <div
+        style={{
+          flex: 1,
+          background: 'radial-gradient(circle at 50% 50%, #212529 0%, #1a1d21 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          borderLeft: '1px solid #343a40',
+        }}
+      >
+        <div style={{ textAlign: 'center', zIndex: 1 }}>
+          <div style={{ 
+            width: '100px', 
+            height: '100px', 
+            backgroundColor: '#ffffff', 
+            borderRadius: '24px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            margin: '0 auto 24px auto',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+          }}>
+            {/* Logo (substitua pelo caminho real da imagem) */}
+            <img 
+              src="/logo.png" 
+              alt="IGAM Logo" 
+              style={{ width: '80%', height: '80%', objectFit: 'contain' }} 
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+            {/* Fallback */}
+            <span style={{ fontSize: '36px', color: '#0e1116', fontWeight: '900', letterSpacing: '-1px', position: 'absolute' }}>IG</span>
+          </div>
+          <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#e6edf3', letterSpacing: '1.5px', lineHeight: 1.2 }}>
+            INSTITUTO<br />GENÉSIO<br />A. MENDES
+          </h2>
+        </div>
+      </div>
+
     </div>
   );
 }

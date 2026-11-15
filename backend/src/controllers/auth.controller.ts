@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js';
 import { env } from '../config/env.js';
 import { supabase } from '../config/supabase.js';
 
-// Busca o perfil na tabela "usuarios" pelo ID do Supabase Auth.
 async function buscarPerfil(authId: string) {
   const { data, error } = await supabase
     .from('usuarios')

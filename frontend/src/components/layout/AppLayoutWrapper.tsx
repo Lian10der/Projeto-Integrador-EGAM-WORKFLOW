@@ -6,23 +6,23 @@ import { Header } from '@/components/layout/Header';
 
 export function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isLogin = pathname === '/login' || pathname.startsWith('/ong');
-  if (isLogin) {
+  
+  // Esconde o menu apenas para a tela de seleção, login do IGAM e área da ONG.
+  // A rota '/ongs' (plural, admin) NÃO deve ser escondida.
+  const esconderMenu = 
+    pathname === '/' || 
+    pathname === '/login' || 
+    pathname.startsWith('/ong/'); // Note a barra no final para pegar apenas /ong/...
+
+  if (esconderMenu) {
     return <>{children}</>;
   }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100%', overflow: 'hidden' }}>
-      {/* Header fixo no topo */}
       <Header />
-
-      {/* Container que segura a Sidebar e o Conteúdo */}
       <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
-
-        {/* Sidebar */}
         <Sidebar />
-
-        {/* Conteúdo Principal com scroll próprio */}
         <main style={{ flex: 1, minWidth: 0, overflowY: 'auto', backgroundColor: 'var(--background)', position: 'relative' }}>
           {children}
         </main>

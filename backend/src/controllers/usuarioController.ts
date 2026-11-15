@@ -1,7 +1,6 @@
 import type { Request, Response } from 'express';
 import { supabase } from '../config/supabase.js';
 
-// LISTAR USUÁRIOS
 export async function listarUsuarios(req: Request, res: Response) {
   try {
     const { data, error } = await supabase
@@ -16,7 +15,6 @@ export async function listarUsuarios(req: Request, res: Response) {
   }
 }
 
-// CRIAR USUÁRIO (Cria no Auth e depois insere na tabela usuarios)
 export async function criarUsuario(req: Request, res: Response) {
   const { nome, email, senha } = req.body;
 
@@ -25,18 +23,16 @@ export async function criarUsuario(req: Request, res: Response) {
   }
 
   try {
-    // 1. Cria no Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email,
       password: senha,
-      email_confirm: true, // Auto Confirm
+      email_confirm: true,
     });
 
     if (authError) {
       return res.status(400).json({ error: authError.message });
     }
 
-    // 2. Insere o perfil na tabela usuarios
     const { data: perfilData, error: perfilError } = await supabase
       .from('usuarios')
       .insert([{
@@ -60,13 +56,11 @@ export async function criarUsuario(req: Request, res: Response) {
   }
 }
 
-// EDITAR USUÁRIO
 export async function editarUsuario(req: Request, res: Response) {
   const id = String(req.params.id);
   const { nome, email, status, senha } = req.body;
 
   try {
-    // Busca o auth_id do usuário na tabela
     const { data: usuarioExistente, error: buscaError } = await supabase
       .from('usuarios')
       .select('auth_id')
@@ -77,7 +71,6 @@ export async function editarUsuario(req: Request, res: Response) {
       return res.status(404).json({ error: 'Usuário não encontrado.' });
     }
 
-    // 1. Atualiza o Auth (se houver senha ou e-mail)
     const authUpdates: any = {};
     if (email) authUpdates.email = email;
     if (senha) authUpdates.password = senha;
@@ -90,7 +83,6 @@ export async function editarUsuario(req: Request, res: Response) {
       if (authError) return res.status(400).json({ error: authError.message });
     }
 
-    // 2. Atualiza o Perfil na tabela usuarios
     const { data: perfilAtualizado, error: perfilError } = await supabase
       .from('usuarios')
       .update({ nome, email, status })
@@ -106,7 +98,6 @@ export async function editarUsuario(req: Request, res: Response) {
   }
 }
 
-// DELETAR USUÁRIO
 export async function deletarUsuario(req: Request, res: Response) {
   const id = String(req.params.id);
 
@@ -117,12 +108,10 @@ export async function deletarUsuario(req: Request, res: Response) {
       .eq('id', id)
       .single();
 
-    // 1. Deleta do Auth
     if (usuarioExistente?.auth_id) {
       await supabase.auth.admin.deleteUser(usuarioExistente.auth_id);
     }
 
-    // 2. Deleta da tabela usuarios
     const { error } = await supabase.from('usuarios').delete().eq('id', id);
     if (error) return res.status(400).json({ error: error.message });
 

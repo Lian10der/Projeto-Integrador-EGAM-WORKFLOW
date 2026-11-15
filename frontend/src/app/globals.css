@@ -2,17 +2,21 @@
    1. Tokens de cor e tipografia
    ========================================================================== */
 :root {
-  --background: #0e1116;
-  --foreground: #f0f6fc;
-  --card: #1c2128;
-  --card-hover: #21262d;
-  --menu-bg: #161b22;
-  --border: #2d333b;
-  --input-bg: #12161c;
-  --input-border: #2d333b;
+  --background: #1a1d21;
+  
+  --foreground: #e6edf3;
+  
+  --card: #212529;
+  --card-hover: #2c3136;
+  
+  --menu-bg: #1a1d21;
+  --border: #343a40;
+  
+  --input-bg: #1a1d21;
+  --input-border: #495057;
 
-  --text-muted: #8b949e;
-  --text-subtle: #6e7681;
+  --text-muted: #adb5bd;
+  --text-subtle: #6c757d;
 
   --primary: #00c4cc;
   --primary-dark: #009aa1;
@@ -22,14 +26,13 @@
   --purple: #6449ff;
   --secondary: #616161;
 
-  --sidebar-text: #8b949e;
-  --sidebar-active: #f0f6fc;
+  --sidebar-text: #adb5bd;
+  --sidebar-active: #ffffff;
 
   --radius-lg: 16px;
   --radius-md: 8px;
 
   --font-sans: var(--font-inter), "Segoe UI", Arial, Helvetica, sans-serif;
-  --font-display: var(--font-montserrat), var(--font-sans);
 }
 
 /* ==========================================================================
@@ -70,7 +73,6 @@ textarea {
   font: inherit;
 }
 
-/* Estilização universal para inputs e selects integrados ao Dark Theme */
 input,
 select {
   background-color: var(--input-bg);
@@ -201,7 +203,7 @@ select option {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   color: var(--sidebar-text);
 }
 
@@ -318,10 +320,10 @@ select option {
 .page-container {
   display: flex;
   flex-direction: column;
-  gap: 32px; /* <-- Aumentado de 24px para 32px (espaço entre o Header e o conteúdo) */
+  gap: 32px;
   width: 100%;
   min-width: 0;
-  padding: 32px; /* <-- Adicionado padding geral para a página não colar nas bordas */
+  padding: 32px;
   max-width: 1600px;
   margin: 0 auto;
 }
@@ -338,7 +340,7 @@ select option {
 .page-header__info {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* <-- Aumentado de 6px para 8px (espaço entre título e descrição) */
+  gap: 8px;
   min-width: 0;
 }
 
@@ -365,7 +367,7 @@ select option {
 .page-content {
   display: flex;
   flex-direction: column;
-  gap: 24px; /* <-- Aumentado de 20px para 24px (espaço entre blocos de conteúdo) */
+  gap: 24px;
   width: 100%;
   min-width: 0;
 }
@@ -527,8 +529,7 @@ select option {
 }
 
 /* ==========================================================================
-   11. Grid de Projetos (Grelha Otimizada para o page.tsx)
-   Suporta .projeto-grid (usada no seu page.tsx), .projetos-grid e .page-content__grid
+   11. Grid de projetos
    ========================================================================== */
 .projeto-grid,
 .projetos-grid,
@@ -543,7 +544,6 @@ select option {
    12. Correção de Formulários e Filtros no Dark Theme
    ========================================================================== */
 
-/* Inputs e selects padrão (como na barra de filtros) mantêm comportamento flex/automático */
 input, select, textarea {
   background-color: var(--input-bg);
   border: 1px solid var(--border);
@@ -570,7 +570,6 @@ input::placeholder, textarea::placeholder {
   color: var(--text-muted);
 }
 
-/* Apenas os formulários de cadastro/edição (ex: ProjetoForm) usam largura 100% em bloco */
 form input:not([type="checkbox"]):not([type="radio"]),
 form textarea,
 form select {
@@ -579,10 +578,9 @@ form select {
 }
 
 /* ==========================================================================
-   13. Padronização de Formulários e Tabelas (Novo)
+   13. Padronização de formulários e tabelas
    ========================================================================== */
 
-/* Container padrão para listas e formulários */
 .page-content-box {
   background-color: var(--card);
   border: 1px solid var(--border);
@@ -593,7 +591,6 @@ form select {
   gap: 20px;
 }
 
-/* Inputs e Selects dentro de formulários para manterem o padrão */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -607,11 +604,10 @@ form select {
   color: var(--text-muted);
 }
 
-/* Ajuste do botão primário para ficar igual ao do protótipo (Ciano) */
 .button--primary {
   background-color: var(--primary);
   border-color: var(--primary);
-  color: #0e1116; /* Texto escuro para contraste no ciano */
+  color: #0e1116;
   font-weight: 700;
 }
 
@@ -620,7 +616,6 @@ form select {
   border-color: var(--primary-dark);
 }
 
-/* Botão de Cancelar/Limpar */
 .button--secondary {
   background-color: transparent;
   border-color: var(--border);
@@ -632,7 +627,6 @@ form select {
   color: var(--foreground);
 }
 
-/* Tabelas Padrão (para a tela de Usuários) */
 .table-container {
   background-color: var(--card);
   border: 1px solid var(--border);
@@ -676,18 +670,17 @@ form select {
    Ocultar barras de rolagem visualmente (mantém a funcionalidade)
    ========================================================================== */
 
-/* Para navegadores Webkit (Chrome, Edge, Safari) */
 ::-webkit-scrollbar {
-  width: 6px; /* Largura bem fina */
+  width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent; /* Fundo invisível */
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2d333b; /* Cor discreta (cinza escuro) */
+  background: #2d333b;
   border-radius: 8px;
 }
 
@@ -695,7 +688,6 @@ form select {
   background: #444c56;
 }
 
-/* Para o Firefox */
 * {
   scrollbar-width: thin;
   scrollbar-color: #2d333b transparent;
@@ -704,9 +696,9 @@ form select {
 /* Esconde especificamente a barra de rolagem horizontal do Kanban, 
    mas mantém a rolagem funcional se a tela for muito pequena */
 .kanban-board-container {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .kanban-board-container::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  display: none;
 }

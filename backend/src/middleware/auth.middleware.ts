@@ -44,3 +44,16 @@ export function requireOng(_req: Request, res: Response, next: NextFunction) {
   }
   return next();
 }
+
+export function requireOngAprovada(_req: Request, res: Response, next: NextFunction) {
+  if (res.locals.papel !== 'ong') {
+    return res.status(403).json({ error: 'Acesso restrito a ONGs.' });
+  }
+  
+  const meta = (res.locals.authUser?.app_metadata ?? {}) as any;
+  if (meta.status_aprovacao !== 'APROVADA') {
+    return res.status(403).json({ error: 'Sua conta ainda está pendente de aprovação pelo IGAM.' });
+  }
+  
+  return next();
+}
