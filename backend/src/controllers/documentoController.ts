@@ -2,10 +2,9 @@ import type { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import { supabase } from '../config/supabase.js';
 
-const BUCKET = 'documentos';
-const TAMANHO_MAXIMO = 10 * 1024 * 1024; // 10 MB
+const BUCKET = 'egam-documentos';
+const TAMANHO_MAXIMO = 10 * 1024 * 1024;
 
-// Guarda o arquivo na memória e aceita apenas PDF.
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: TAMANHO_MAXIMO },
@@ -15,7 +14,6 @@ const upload = multer({
   },
 });
 
-// Middleware que devolve erros em JSON, no mesmo padrão do resto da API.
 export function uploadPdf(req: Request, res: Response, next: NextFunction) {
   upload.single('arquivo')(req, res, (err: unknown) => {
     if (err) {
@@ -31,13 +29,11 @@ export function uploadPdf(req: Request, res: Response, next: NextFunction) {
   });
 }
 
-// Converte o ID da URL em número. Retorna null se não for um ID válido.
 function idValido(valor: unknown): number | null {
   const n = Number(valor);
   return Number.isInteger(n) && n > 0 ? n : null;
 }
 
-// GET /projetos/:id/documentos
 export async function listarDocumentos(req: Request, res: Response) {
   const projetoId = idValido(req.params.id);
   if (!projetoId) return res.status(404).json({ error: 'Projeto não encontrado.' });
@@ -52,7 +48,6 @@ export async function listarDocumentos(req: Request, res: Response) {
   return res.json(data);
 }
 
-// POST /projetos/:id/documentos (multipart, campo "arquivo")
 export async function adicionarDocumento(req: Request, res: Response) {
   try {
     const projetoId = idValido(req.params.id);
@@ -102,7 +97,6 @@ export async function adicionarDocumento(req: Request, res: Response) {
   }
 }
 
-// GET /projetos/:id/documentos/:docId/url
 // Gera um link temporário (5 minutos) para abrir o PDF. O bucket é privado.
 export async function gerarUrlDocumento(req: Request, res: Response) {
   const projetoId = idValido(req.params.id);
@@ -130,4 +124,37 @@ export async function gerarUrlDocumento(req: Request, res: Response) {
   }
 
   return res.json({ url: data.signedUrl });
+}
+
+export async function excluirDocumento(req: Request, res: Response) {
+  try {
+    const projetoId = idValido(req.params.id);
+    const documentoId = idValido(req.params.docId);
+    if (!projetoId || !documentoId) {
+      return res.status(404).json({ error: 'Documento não encontrado.' });
+    }
+
+    const { data: doc, error } = await supabase
+      .from('documentos')
+      .select('caminho_arquivo')
+      .eq('id', documentoId)
+      .eq('projeto_id', projetoId)
+      .maybeSingle();
+
+    if (error) return res.status(400).json({ error: error.message });
+    if (!doc) return res.status(404).json({ error: 'Documento não encontrado.' });
+
+    await supabase.storage.from(BUCKET).remove([doc.caminho_arquivo]);
+
+    const { error: erroDelete } = await supabase
+      .from('documentos')
+      .delete()
+      .eq('id', documentoId);
+
+    if (erroDelete) return res.status(400).json({ error: erroDelete.message });
+
+    return res.status(204).send();
+  } catch {
+    return res.status(500).json({ error: 'Erro ao excluir documento.' });
+  }
 }

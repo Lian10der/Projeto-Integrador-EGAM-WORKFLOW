@@ -1,15 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { API_URL } from '@/lib/sessao';
-import { enviarDocumento, validarPdf } from '@/lib/documentos';
+import { enviarDocumento, validarPdf, listarDocumentosDoProjeto, abrirDocumento, type Documento } from '@/lib/documentos';
 import type { Projeto } from '@/types/projeto';
 
 interface ProjetoFormProps {
   onSuccess?: () => void;
-  projeto?: Projeto;        // se informado, o formulário edita este projeto
-  rota?: string;            // '/projetos' (administrador) ou '/ong/projetos' (ONG)
-  cnpjFixo?: string;        // se informado, o CNPJ fica travado com este valor
+  projeto?: Projeto;
+  rota?: string;
+  cnpjFixo?: string;
+  categorias?: string[];
 }
 
 interface Lei {
@@ -17,13 +18,11 @@ interface Lei {
   nome: string;
 }
 
-const CATEGORIAS = ['Cultura', 'Educação', 'Esporte', 'Saúde'];
 const TIPOS_ENTIDADE = ['Associação', 'Fundação', 'OSCIP', 'Outro'];
 
 const FORM_INICIAL = {
   titulo: '',
-  area_atuacao: 'Cultura',
-  lei_incentivo_id: '',
+  area_atuacao: '',
   objetivo: '',
   impacto_social: '',
   estado: '',
@@ -47,6 +46,7 @@ const FORM_INICIAL = {
   data_inicio_execucao: '',
   data_fim_execucao: '',
   tags: '',
+  classificacao_ranking: '',
 };
 
 type NomeCampo = keyof typeof FORM_INICIAL;
@@ -82,7 +82,6 @@ function tamanhoArquivo(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-// Cria uma cópia dos valores (nunca altera a constante FORM_INICIAL).
 function valoresIniciais(projeto?: Projeto): Valores {
   if (!projeto) return { ...FORM_INICIAL };
 
@@ -95,12 +94,11 @@ function valoresIniciais(projeto?: Projeto): Valores {
   });
 
   valores.cnpj = formatarCnpj(valores.cnpj);
-  if (!valores.area_atuacao) valores.area_atuacao = 'Cultura';
   if (!valores.tipo_entidade) valores.tipo_entidade = 'Associação';
   return valores;
 }
 
-export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cnpjFixo }: ProjetoFormProps) {
+export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cnpjFixo, categorias = [] }: ProjetoFormProps) {
   const modoEdicao = !!projeto;
 
   const [step, setStep] = useState<1 | 2>(1);
@@ -110,9 +108,14 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
     return v;
   });
   const [leis, setLeis] = useState<Lei[]>([]);
+  const [nomeLei, setNomeLei] = useState('');
   const [arquivo, setArquivo] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+
+  const [documentos, setDocumentos] = useState<Documento[]>([]);
+  const [enviandoDoc, setEnviandoDoc] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('igam_token');
@@ -124,9 +127,21 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
         if (!res.ok) throw new Error('Não foi possível carregar as leis.');
         return res.json() as Promise<Lei[]>;
       })
-      .then((data) => setLeis(data))
+      .then((data) => {
+        setLeis(data);
+        if (projeto?.lei_incentivo_id) {
+          const leiEncontrada = data.find((l) => l.id === projeto.lei_incentivo_id);
+          if (leiEncontrada) setNomeLei(leiEncontrada.nome);
+        }
+      })
       .catch((err: Error) => setErro(err.message));
-  }, []);
+
+    if (modoEdicao && projeto) {
+      listarDocumentosDoProjeto(projeto.id, rota)
+        .then(setDocumentos)
+        .catch((err) => console.error('Erro ao carregar documentos:', err));
+    }
+  }, [modoEdicao, projeto, rota]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -134,21 +149,18 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
     const { name, value } = e.target;
     const campo = name as NomeCampo;
 
-    // CNPJ travado: ignora qualquer alteração
     if (campo === 'cnpj' && cnpjFixo) return;
 
     const valorFinal = campo === 'cnpj' ? formatarCnpj(value) : value;
     setForm((prev) => ({ ...prev, [campo]: valorFinal }));
   }
 
-  function handleArquivo(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleArquivoNovo(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
-
     if (!file) {
       setArquivo(null);
       return;
     }
-
     const msg = validarPdf(file);
     if (msg) {
       setErro(msg);
@@ -156,15 +168,56 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
       e.target.value = '';
       return;
     }
-
     setErro(null);
     setArquivo(file);
+  }
+
+  async function handleUploadDocumento(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !projeto) return;
+
+    const msg = validarPdf(file);
+    if (msg) {
+      alert(msg);
+      return;
+    }
+
+    setEnviandoDoc(true);
+    try {
+      await enviarDocumento(projeto.id, file, rota);
+      const docs = await listarDocumentosDoProjeto(projeto.id, rota);
+      setDocumentos(docs);
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setEnviandoDoc(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }
+
+  async function handleExcluirDocumento(docId: number) {
+    if (!projeto) return;
+    if (!confirm('Tem certeza que deseja excluir este documento?')) return;
+
+    try {
+      const token = localStorage.getItem('igam_token');
+      const res = await fetch(`${API_URL}${rota}/${projeto.id}/documentos/${docId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Erro ao excluir documento.');
+      
+      const docs = await listarDocumentosDoProjeto(projeto.id, rota);
+      setDocumentos(docs);
+    } catch (err: any) {
+      alert(err.message);
+    }
   }
 
   function validarEtapa1(): string | null {
     const obrigatorios: [NomeCampo, string][] = [
       ['titulo', 'Nome do projeto'],
-      ['lei_incentivo_id', 'Lei aplicável'],
+      ['area_atuacao', 'Categoria ou tipo'],
       ['objetivo', 'Resumo executivo'],
       ['impacto_social', 'Finalidade e impacto'],
       ['estado', 'Estado'],
@@ -181,6 +234,11 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
     if (form.cnpj.replace(/\D/g, '').length !== 14) {
       return 'CNPJ inválido. Digite os 14 números.';
     }
+    
+    if (!nomeLei.trim()) return 'Preencha o campo: Lei aplicável.';
+    const leiExiste = leis.some((l) => l.nome === nomeLei);
+    if (!leiExiste) return 'Selecione uma lei válida da lista.';
+
     return null;
   }
 
@@ -207,6 +265,14 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
     if (form.data_inicio_execucao && form.data_fim_execucao && form.data_fim_execucao < form.data_inicio_execucao) {
       return 'A data final da execução não pode ser anterior à data inicial.';
     }
+
+    if (form.classificacao_ranking) {
+      const rank = Number(form.classificacao_ranking);
+      if (isNaN(rank) || rank < 0 || rank > 5) {
+        return 'A classificação deve ser um número entre 0 e 5.';
+      }
+    }
+
     return null;
   }
 
@@ -226,10 +292,12 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
   }
 
   function montarPayload() {
+    const leiSelecionada = leis.find((l) => l.nome === nomeLei);
+
     return {
       titulo: form.titulo.trim(),
-      area_atuacao: form.area_atuacao,
-      lei_incentivo_id: numero(form.lei_incentivo_id),
+      area_atuacao: form.area_atuacao.trim(),
+      lei_incentivo_id: leiSelecionada ? leiSelecionada.id : null,
       objetivo: texto(form.objetivo),
       impacto_social: texto(form.impacto_social),
       estado: texto(form.estado),
@@ -253,6 +321,7 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
       data_inicio_execucao: form.data_inicio_execucao || null,
       data_fim_execucao: form.data_fim_execucao || null,
       tags: texto(form.tags),
+      classificacao_ranking: form.classificacao_ranking ? Number(form.classificacao_ranking) : null,
     };
   }
 
@@ -275,7 +344,6 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
         Authorization: `Bearer ${token}`,
       };
 
-      // ----- EDIÇÃO -----
       if (modoEdicao && projeto) {
         const response = await fetch(`${API_URL}${rota}/${projeto.id}`, {
           method: 'PATCH',
@@ -296,12 +364,7 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
         return;
       }
 
-      // ----- CRIAÇÃO -----
-      const payload = {
-        protocolo: `PROT-${Math.floor(10000 + Math.random() * 90000)}`,
-        ...montarPayload(),
-      };
-
+      const payload = montarPayload();
       const response = await fetch(`${API_URL}${rota}`, {
         method: 'POST',
         headers: cabecalhos,
@@ -346,11 +409,19 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
             </Bloco>
 
             <Bloco label="Categoria ou tipo" obrigatorio>
-              <select name="area_atuacao" value={form.area_atuacao} onChange={handleChange} style={estiloInput}>
-                {CATEGORIAS.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+              <input
+                name="area_atuacao"
+                value={form.area_atuacao}
+                onChange={handleChange}
+                list="categorias-sugeridas"
+                placeholder="Digite ou selecione uma categoria"
+                style={estiloInput}
+              />
+              <datalist id="categorias-sugeridas">
+                {categorias.map((cat) => (
+                  <option key={cat} value={cat} />
                 ))}
-              </select>
+              </datalist>
             </Bloco>
 
             <Bloco label="Resumo executivo" obrigatorio larga>
@@ -370,17 +441,24 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
             </Bloco>
 
             <Bloco label="Lei aplicável" obrigatorio larga>
-              <select name="lei_incentivo_id" value={form.lei_incentivo_id} onChange={handleChange} style={estiloInput}>
-                <option value="">{leis.length === 0 ? 'Carregando leis...' : 'Selecione uma lei'}</option>
+              <input
+                type="text"
+                value={nomeLei}
+                onChange={(e) => setNomeLei(e.target.value)}
+                list="leis-sugeridas"
+                placeholder="Digite ou selecione uma lei"
+                style={estiloInput}
+              />
+              <datalist id="leis-sugeridas">
                 {leis.map((lei) => (
-                  <option key={lei.id} value={lei.id}>{lei.nome}</option>
+                  <option key={lei.id} value={lei.nome} />
                 ))}
-              </select>
+              </datalist>
             </Bloco>
 
             {!modoEdicao && (
               <Bloco label="PDF do projeto (opcional)" larga>
-                <input type="file" accept="application/pdf" onChange={handleArquivo} style={{ marginTop: '6px' }} />
+                <input type="file" accept="application/pdf" onChange={handleArquivoNovo} style={{ marginTop: '6px' }} />
                 {arquivo && (
                   <small style={{ display: 'block', marginTop: '6px', color: 'var(--text-muted)' }}>
                     {arquivo.name} ({tamanhoArquivo(arquivo.size)})
@@ -434,6 +512,73 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
               <textarea name="sobre_instituicao" value={form.sobre_instituicao} onChange={handleChange} rows={3} maxLength={500} placeholder="Descreva a instituição e seu impacto social..." style={estiloInput} />
             </Bloco>
           </Secao>
+
+          {modoEdicao && (
+            <Secao titulo="Documentos">
+              <div style={{ gridColumn: '1 / -1' }}>
+                {documentos.length === 0 ? (
+                  <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '12px' }}>Nenhum documento anexado.</p>
+                ) : (
+                  documentos.map((doc) => (
+                    <div
+                      key={doc.id}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '10px 0',
+                        borderBottom: '1px solid var(--border)',
+                        fontSize: '13px',
+                      }}
+                    >
+                      <span style={{ minWidth: 0, wordBreak: 'break-word' }}>
+                        {doc.nome_original}
+                        {doc.tamanho_bytes ? (
+                          <span style={{ color: 'var(--text-muted)' }}> ({tamanhoArquivo(doc.tamanho_bytes)})</span>
+                        ) : null}
+                      </span>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          type="button"
+                          className="button button--secondary"
+                          onClick={() => abrirDocumento(projeto.id, doc.id, rota).catch((err: Error) => alert(err.message))}
+                        >
+                          Abrir
+                        </button>
+                        <button
+                          type="button"
+                          className="button button--secondary"
+                          onClick={() => handleExcluirDocumento(doc.id)}
+                          style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}
+                        >
+                          Excluir
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+
+                <div style={{ marginTop: '16px' }}>
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    ref={fileInputRef}
+                    onChange={handleUploadDocumento}
+                    style={{ display: 'none' }}
+                    id="upload-documento"
+                  />
+                  <label
+                    htmlFor="upload-documento"
+                    className="button button--cyan"
+                    style={{ display: 'inline-flex', cursor: 'pointer' }}
+                  >
+                    {enviandoDoc ? 'Enviando...' : 'Anexar novo PDF'}
+                  </label>
+                </div>
+              </div>
+            </Secao>
+          )}
         </>
       )}
 
@@ -461,6 +606,25 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
             </Bloco>
           </Secao>
 
+          <Secao titulo="Avaliação">
+            <Bloco label="Classificação (ranking)">
+              <input
+                type="number"
+                name="classificacao_ranking"
+                value={form.classificacao_ranking}
+                onChange={handleChange}
+                min="0"
+                max="5"
+                step="1"
+                placeholder="0 a 5"
+                style={estiloInput}
+              />
+              <small style={{ display: 'block', marginTop: '6px', color: 'var(--text-muted)' }}>
+                De 0 a 5. Notas maiores indicam maior relevância.
+              </small>
+            </Bloco>
+          </Secao>
+
           <Secao titulo="Impacto">
             <Bloco label="Pessoas alcançadas (estimativa)">
               <input type="number" min="0" name="pessoas_alcancadas_estimativa" value={form.pessoas_alcancadas_estimativa} onChange={handleChange} placeholder="Ex: 2500" style={estiloInput} />
@@ -473,19 +637,16 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
 
           <Secao titulo="Cronograma">
             <Bloco label="Início da análise">
-              <input type="date" name="data_inicio_analise" value={form.data_inicio_analise} onChange={handleChange} style={estiloInput} />
+              <input type="date" name="data_inicio_analise" value={form.data_inicio_analise} onChange={handleChange} max="2099-12-31" style={estiloInput} />
             </Bloco>
-
             <Bloco label="Fim da análise">
-              <input type="date" name="data_fim_analise" value={form.data_fim_analise} onChange={handleChange} style={estiloInput} />
+              <input type="date" name="data_fim_analise" value={form.data_fim_analise} onChange={handleChange} max="2099-12-31" style={estiloInput} />
             </Bloco>
-
             <Bloco label="Início da execução">
-              <input type="date" name="data_inicio_execucao" value={form.data_inicio_execucao} onChange={handleChange} style={estiloInput} />
+              <input type="date" name="data_inicio_execucao" value={form.data_inicio_execucao} onChange={handleChange} max="2099-12-31" style={estiloInput} />
             </Bloco>
-
             <Bloco label="Fim da execução">
-              <input type="date" name="data_fim_execucao" value={form.data_fim_execucao} onChange={handleChange} style={estiloInput} />
+              <input type="date" name="data_fim_execucao" value={form.data_fim_execucao} onChange={handleChange} max="2099-12-31" style={estiloInput} />
             </Bloco>
           </Secao>
         </>
@@ -512,8 +673,6 @@ export default function ProjetoForm({ onSuccess, projeto, rota = '/projetos', cn
     </form>
   );
 }
-
-// ---------- Blocos auxiliares de layout ----------
 
 function Secao({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (

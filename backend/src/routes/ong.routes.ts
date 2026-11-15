@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { requireAuth, requireOng } from '../middleware/auth.middleware.js';
+import { requireAuth, requireOng, requireOngAprovada } from '../middleware/auth.middleware.js';
 import * as ong from '../controllers/ongController.js';
 import { criarProjeto, buscarProjetoPorId } from '../controllers/projetoController.js';
 import { atualizarProjeto } from '../controllers/projetoEdicaoController.js';
@@ -7,6 +7,7 @@ import {
   listarDocumentos,
   adicionarDocumento,
   gerarUrlDocumento,
+  excluirDocumento,
   uploadPdf,
 } from '../controllers/documentoController.js';
 
@@ -15,20 +16,21 @@ const router = Router();
 // Só ONGs autenticadas passam por aqui.
 const soOng = [requireAuth, requireOng];
 
-// ----- Públicas (sem login) -----
-router.post('/solicitar-codigo', ong.solicitarCodigo);
-router.post('/verificar-codigo', ong.verificarCodigo);
+// Só ONGs autenticadas E APROVADAS passam por aqui.
+const soOngAprovada = [requireAuth, requireOng, requireOngAprovada];
 
-// ----- Exigem login de ONG -----
+// ----- Exigem login de ONG (mas não necessariamente aprovação) -----
 router.get('/me', soOng, ong.me);
 
-router.get('/projetos', soOng, ong.listarProjetosOng);
-router.post('/projetos', soOng, ong.forcarCnpjDaOng, criarProjeto);
-router.get('/projetos/:id', soOng, ong.projetoDaOng, buscarProjetoPorId);
-router.patch('/projetos/:id', soOng, ong.projetoDaOng, ong.removerCamposProtegidos, atualizarProjeto);
+// ----- Exigem ONG APROVADA -----
+router.get('/projetos', soOngAprovada, ong.listarProjetosOng);
+router.post('/projetos', soOngAprovada, ong.forcarCnpjDaOng, criarProjeto);
+router.get('/projetos/:id', soOngAprovada, ong.projetoDaOng, buscarProjetoPorId);
+router.patch('/projetos/:id', soOngAprovada, ong.projetoDaOng, ong.removerCamposProtegidos, atualizarProjeto);
 
-router.get('/projetos/:id/documentos', soOng, ong.projetoDaOng, listarDocumentos);
-router.post('/projetos/:id/documentos', soOng, ong.projetoDaOng, uploadPdf, adicionarDocumento);
-router.get('/projetos/:id/documentos/:docId/url', soOng, ong.projetoDaOng, gerarUrlDocumento);
+router.get('/projetos/:id/documentos', soOngAprovada, ong.projetoDaOng, listarDocumentos);
+router.post('/projetos/:id/documentos', soOngAprovada, ong.projetoDaOng, uploadPdf, adicionarDocumento);
+router.get('/projetos/:id/documentos/:docId/url', soOngAprovada, ong.projetoDaOng, gerarUrlDocumento);
+router.delete('/projetos/:id/documentos/:docId', soOngAprovada, ong.projetoDaOng, excluirDocumento);
 
 export default router;

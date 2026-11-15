@@ -7,7 +7,6 @@ export interface UsuarioAtual {
   status: string | null;
 }
 
-// Busca o usuário logado. Retorna null se não houver sessão válida.
 export async function buscarUsuarioAtual(): Promise<UsuarioAtual | null> {
   const token = localStorage.getItem('igam_token');
   if (!token) return null;
@@ -42,5 +41,5 @@ export function primeiroNome(nome: string): string {
 
 export function sair(): void {
   localStorage.removeItem('igam_token');
-  window.location.href = '/login';
+  window.location.href = '/';
 }

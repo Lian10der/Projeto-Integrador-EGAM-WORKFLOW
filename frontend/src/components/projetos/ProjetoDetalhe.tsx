@@ -14,7 +14,8 @@ interface LeiResumo {
 interface ProjetoDetalheProps {
   projeto: Projeto;
   leis?: LeiResumo[];
-  base?: string; // '/projetos' para o administrador, '/ong/projetos' para a ONG
+  base?: string;
+  onExcluir?: (projeto: Projeto) => void;
 }
 
 function moeda(valor: number | null | undefined): string {
@@ -22,7 +23,6 @@ function moeda(valor: number | null | undefined): string {
   return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 
-// Datas do tipo "date" são lidas como data local, para não voltar um dia.
 function data(valor: string | null | undefined): string {
   if (!valor) return '—';
   const somenteData = /^(\d{4})-(\d{2})-(\d{2})$/.exec(valor);
@@ -45,13 +45,12 @@ function tamanho(bytes: number | null): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function ProjetoDetalhe({ projeto, leis = [], base = '/projetos' }: ProjetoDetalheProps) {
+export function ProjetoDetalhe({ projeto, leis = [], base = '/projetos', onExcluir }: ProjetoDetalheProps) {
   const [documentos, setDocumentos] = useState<Documento[]>([]);
   const [erroDocs, setErroDocs] = useState<string | null>(null);
 
   useEffect(() => {
     let ativo = true;
-
     listarDocumentosDoProjeto(projeto.id, base)
       .then((docs) => {
         if (ativo) setDocumentos(docs);
@@ -59,7 +58,6 @@ export function ProjetoDetalhe({ projeto, leis = [], base = '/projetos' }: Proje
       .catch((err: Error) => {
         if (ativo) setErroDocs(err.message);
       });
-
     return () => {
       ativo = false;
     };
@@ -75,7 +73,17 @@ export function ProjetoDetalhe({ projeto, leis = [], base = '/projetos' }: Proje
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+        {onExcluir && base === '/projetos' && (
+          <button
+            type="button"
+            className="button button--secondary"
+            onClick={() => onExcluir(projeto)}
+            style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}
+          >
+            Excluir Projeto
+          </button>
+        )}
         <button type="button" className="button button--cyan" onClick={() => abrirRelatorio(projeto, leis)}>
           Gerar relatório (PDF)
         </button>
@@ -86,7 +94,7 @@ export function ProjetoDetalhe({ projeto, leis = [], base = '/projetos' }: Proje
         <Campo label="Protocolo" valor={texto(projeto.protocolo)} />
         <Campo label="Área de atuação" valor={texto(projeto.area_atuacao)} />
         <Campo label="Lei de incentivo" valor={leiTexto} />
-        <Campo label="Ranking" valor={texto(projeto.classificacao_ranking)} />
+        <Campo label="Ranking" valor={projeto.classificacao_ranking !== null ? `${projeto.classificacao_ranking}/5` : '—'} />
         <Campo label="Tags" valor={texto(projeto.tags)} />
       </Secao>
 
@@ -116,7 +124,7 @@ export function ProjetoDetalhe({ projeto, leis = [], base = '/projetos' }: Proje
       </Secao>
 
       <Secao titulo="5. Impacto">
-        <Campo label="Vidas impactadas" valor={texto(projeto.vidas_impactadas)} />
+        <Campo label="Vidas impactadas" valor={texto(projeto.vidas_impactadas ?? projeto.pessoas_alcancadas_estimativa)} />
         <Campo label="Pessoas alcançadas (estimativa)" valor={texto(projeto.pessoas_alcancadas_estimativa)} />
         <Campo label="Pessoas alcançadas (comprovadas)" valor={texto(projeto.pessoas_alcancadas_comprovadas)} />
       </Secao>
@@ -178,8 +186,6 @@ export function ProjetoDetalhe({ projeto, leis = [], base = '/projetos' }: Proje
     </div>
   );
 }
-
-// ---------- Blocos auxiliares ----------
 
 const tituloSecao: React.CSSProperties = {
   fontSize: '14px',

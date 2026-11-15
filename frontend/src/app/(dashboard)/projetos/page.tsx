@@ -30,7 +30,6 @@ function ProjetosContent() {
   const [projetoSelecionado, setProjetoSelecionado] = useState<Projeto | null>(null);
   const [projetoEditando, setProjetoEditando] = useState<Projeto | null>(null);
 
-  // Busca inicial de leis e categorias
   useEffect(() => {
     const token = localStorage.getItem('igam_token');
 
@@ -45,16 +44,18 @@ function ProjetosContent() {
       .then((data) => setLeis(data))
       .catch((err) => setErroLeis(err.message));
 
-    fetch(`${API_URL}/projetos`, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${API_URL}/projetos/categorias`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => res.json())
       .then((data) => {
-        const catsUnicas = Array.from(new Set(data.map((p: Projeto) => p.area_atuacao).filter(Boolean))) as string[];
-        setCategorias(catsUnicas);
+        if (Array.isArray(data)) setCategorias(data);
+        else setCategorias([]);
       })
-      .catch((err) => console.error('Erro ao buscar categorias:', err));
+      .catch((err) => {
+        console.error('Erro ao buscar categorias:', err);
+        setCategorias([]);
+      });
   }, []);
 
-  // Lê os parâmetros da URL (?novo=true e ?busca=...)
   useEffect(() => {
     if (searchParams.get('novo') === 'true') {
       setModalCriarAberto(true);
@@ -111,6 +112,31 @@ function ProjetosContent() {
     return () => clearTimeout(timer);
   }, [filtros]);
 
+  const excluirProjeto = async (projeto: Projeto) => {
+    if (!confirm(`Tem certeza que deseja excluir o projeto "${projeto.titulo}"? Esta ação não pode ser desfeita.`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('igam_token');
+      const res = await fetch(`${API_URL}/projetos/${projeto.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Erro ao excluir projeto.');
+      }
+
+      alert('Projeto excluído com sucesso!');
+      setProjetoSelecionado(null);
+      fetchProjetos();
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
   return (
     <PageContainer>
       <PageHeader
@@ -151,25 +177,32 @@ function ProjetosContent() {
         </PageContent>
       </div>
 
-      {/* MODAL: CRIAR PROJETO */}
       <Modal isOpen={modalCriarAberto} onClose={() => setModalCriarAberto(false)} title="Cadastrar Novo Projeto" maxWidth="700px">
-        <ProjetoForm onSuccess={() => { setModalCriarAberto(false); fetchProjetos(); }} />
+        <ProjetoForm
+          onSuccess={() => { setModalCriarAberto(false); fetchProjetos(); }}
+          categorias={categorias}
+        />
       </Modal>
 
-      {/* MODAL: EDITAR PROJETO */}
       <Modal isOpen={!!projetoEditando} onClose={() => setProjetoEditando(null)} title="Editar Projeto" maxWidth="700px">
         {projetoEditando && (
           <ProjetoForm
             key={projetoEditando.id}
             projeto={projetoEditando}
             onSuccess={() => { setProjetoEditando(null); fetchProjetos(); }}
+            categorias={categorias}
           />
         )}
       </Modal>
 
-      {/* MODAL: DETALHES */}
       <Modal isOpen={!!projetoSelecionado} onClose={() => setProjetoSelecionado(null)} title={projetoSelecionado?.titulo || 'Detalhes do Projeto'} maxWidth="800px">
-        {projetoSelecionado && <ProjetoDetalhe projeto={projetoSelecionado} leis={leis} />}
+        {projetoSelecionado && (
+          <ProjetoDetalhe
+            projeto={projetoSelecionado}
+            leis={leis}
+            onExcluir={excluirProjeto}
+          />
+        )}
       </Modal>
     </PageContainer>
   );

@@ -11,12 +11,6 @@ export const STATUS_PROJETO = [
 
 export type StatusProjeto = (typeof STATUS_PROJETO)[number];
 
-export type LeiIncentivo =
-  | "rouanet"
-  | "pronac"
-  | "fumcine"
-  | "outra";
-
 // Espelha a tabela "projetos" do Supabase.
 // Os nomes dos campos são os mesmos do banco, sem conversão.
 export interface Projeto {
@@ -58,29 +52,10 @@ export interface Projeto {
   tags: string | null;
 }
 
-// Valores do formulario de criacao. Usar um tipo proprio deixa claro
-// quais campos existem e quais sao opcionais.
-export interface ProjetoFormValues {
-  nomeProjeto: string;
-  dataInicio: string;
-  dataEntrega: string;
-  tags: string;
-  metaOrcamento: string;
-  arquivo: string;
-  descricao: string;
-}
-
 export const STATUS_LABEL: Record<StatusProjeto, string> = {
   rascunho: 'Rascunho',
   submetido: 'Submetido',
   em_analise: 'Em análise',
   aprovado: 'Aprovado',
   reprovado: 'Reprovado',
-};
-
-export const LEI_LABEL: Record<LeiIncentivo, string> = {
-  rouanet: "Lei Rouanet",
-  pronac: "PRONAC",
-  fumcine: "FUMCINE",
-  outra: "Outra",
 };

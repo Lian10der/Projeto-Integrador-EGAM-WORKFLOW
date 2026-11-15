@@ -1,7 +1,7 @@
 # Sistema de Gestão e Triagem de Projetos (E-GAM Workflow)
- 
+
 Sistema web desenvolvido como Projeto Integrador da UNISATC com o objetivo de centralizar, organizar e facilitar o processo de submissão, análise e avaliação de projetos sociais recebidos pelo Instituto Genésio Antônio Mendes (IGAM).
- 
+
 > Projeto Integrador — Engenharia de Software, UNISATC (Centro Universitário SATC), 2026.
 
 ## Sobre o projeto
@@ -162,7 +162,6 @@ cd Projeto-Integrador-EGAM-WORKFLOW
 ### Instale as dependências
 
 ```bash
-# Na raiz ou nos diretórios específicos de backend/frontend
 npm install
 ```
 

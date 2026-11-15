@@ -48,7 +48,6 @@ function secao(titulo: string, conteudo: string): string {
   </section>`;
 }
 
-// Abre uma nova aba com o relatório e chama a impressão.
 // Na janela de impressão, escolha "Salvar como PDF".
 export function abrirRelatorio(projeto: Projeto, leis: LeiResumo[] = []): void {
   const janela = window.open('', '_blank');

@@ -6,7 +6,9 @@ export default function Page() {
   return (
     <PageContainer>
       <PageHeader title="Documentos" description="Visualização de documentos (em desenvolvimento)." />
-      <PageContent>{/* Conteúdo da página será desenvolvido aqui. */}</PageContent>
+      <PageContent>
+        <p className="empty-state">Em breve.</p>
+      </PageContent>
     </PageContainer>
   );
 }

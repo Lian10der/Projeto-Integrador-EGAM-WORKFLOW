@@ -7,7 +7,7 @@ const TEXTOS = [
   'telefone', 'site_url', 'sobre_instituicao', 'justificativa_pedido', 'tags',
 ] as const;
 
-const NUMEROS = ['lei_incentivo_id', 'valor_total', 'teto_captacao', 'valor_solicitado'] as const;
+const NUMEROS = ['lei_incentivo_id', 'valor_total', 'teto_captacao', 'valor_solicitado', 'classificacao_ranking'] as const;
 const INTEIROS = ['pessoas_alcancadas_estimativa', 'pessoas_alcancadas_comprovadas'] as const;
 const DATAS = ['data_inicio_analise', 'data_fim_analise', 'data_inicio_execucao', 'data_fim_execucao'] as const;
 
@@ -33,7 +33,6 @@ function data(valor: unknown): string | null {
   return typeof valor === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(valor) ? valor : null;
 }
 
-// PATCH /projetos/:id
 export async function atualizarProjeto(req: Request, res: Response) {
   try {
     const id = Number(req.params.id);
@@ -48,6 +47,13 @@ export async function atualizarProjeto(req: Request, res: Response) {
     for (const c of NUMEROS) if (c in corpo) campos[c] = numero(corpo[c]);
     for (const c of INTEIROS) if (c in corpo) campos[c] = inteiro(corpo[c]);
     for (const c of DATAS) if (c in corpo) campos[c] = data(corpo[c]);
+
+    if ('classificacao_ranking' in campos) {
+      const ranking = campos.classificacao_ranking as number | null;
+      if (ranking !== null && (ranking < 0 || ranking > 5)) {
+        return res.status(400).json({ error: 'A classificação deve ser entre 0 e 5.' });
+      }
+    }
 
     if (Object.keys(campos).length === 0) {
       return res.status(400).json({ error: 'Nenhum campo para atualizar.' });

@@ -12,7 +12,7 @@ import type { Projeto, StatusProjeto } from '@/types/projeto';
 import { API_URL } from '@/lib/sessao';
 
 const COLUNAS: { id: StatusProjeto; titulo: string; cor: string }[] = [
-  { id: 'rascunho', titulo: 'Rascunho', cor: '#8b949e' },
+  { id: 'rascunho', titulo: 'Rascunho', cor: '#6c757d' },
   { id: 'submetido', titulo: 'Submetido', cor: '#00c4cc' },
   { id: 'em_analise', titulo: 'Em Análise', cor: '#fccb62' },
   { id: 'aprovado', titulo: 'Aprovado', cor: '#11a286' },
@@ -24,8 +24,6 @@ export default function KanbanPage() {
   const [projetos, setProjetos] = useState<Projeto[]>([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
-
-  // Estado para o modal de detalhes
   const [projetoSelecionado, setProjetoSelecionado] = useState<Projeto | null>(null);
 
   useEffect(() => {
@@ -110,29 +108,29 @@ export default function KanbanPage() {
                   style={{
                     flex: 1,
                     minWidth: '240px',
-                    backgroundColor: '#161b22',
+                    backgroundColor: '#1a1d21',
                     borderRadius: '12px',
-                    border: '1px solid #2d333b',
+                    border: '1px solid #343a40',
                     display: 'flex',
                     flexDirection: 'column'
                   }}
                 >
                   <div style={{
                     padding: '12px 16px',
-                    borderBottom: '1px solid #2d333b',
+                    borderBottom: '1px solid #343a40',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px'
                   }}>
                     <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: coluna.cor }} />
-                    <h3 style={{ fontSize: '13px', fontWeight: 600, color: '#f0f6fc' }}>{coluna.titulo}</h3>
+                    <h3 style={{ fontSize: '13px', fontWeight: 600, color: '#e6edf3' }}>{coluna.titulo}</h3>
                     <span style={{
                       marginLeft: 'auto',
                       fontSize: '11px',
-                      backgroundColor: '#21262d',
+                      backgroundColor: '#212529',
                       padding: '2px 8px',
                       borderRadius: '12px',
-                      color: '#8b949e'
+                      color: '#adb5bd'
                     }}>
                       {projetosPorColuna(coluna.id).length}
                     </span>
@@ -147,7 +145,7 @@ export default function KanbanPage() {
                           flex: 1,
                           padding: '12px',
                           overflowY: 'auto',
-                          backgroundColor: snapshot.isDraggingOver ? 'rgba(0, 196, 204, 0.05)' : 'transparent',
+                          backgroundColor: snapshot.isDraggingOver ? 'rgba(255, 255, 255, 0.02)' : 'transparent',
                           transition: 'background-color 0.2s',
                           display: 'flex',
                           flexDirection: 'column',
@@ -163,22 +161,19 @@ export default function KanbanPage() {
                                 {...provided.dragHandleProps}
                                 style={{
                                   ...provided.draggableProps.style,
-                                  backgroundColor: '#1c2128',
-                                  border: '1px solid #2d333b',
+                                  backgroundColor: '#212529',
+                                  border: '1px solid #343a40',
                                   borderRadius: '8px',
                                   padding: '12px',
                                   cursor: 'grab',
                                   opacity: snapshot.isDragging ? 0.8 : 1,
                                   boxShadow: snapshot.isDragging ? '0 8px 24px rgba(0,0,0,0.5)' : 'none',
-                                  // Só aplica position relative quando o card NÃO está sendo arrastado.
-                                  // Durante o arraste, a biblioteca controla a posição.
-                                  ...(snapshot.isDragging ? {} : { position: 'relative' as const }),
+                                  position: 'relative',
                                 }}
                               >
-                                {/* BOTÃO DE DETALHES (Canto superior direito) */}
                                 <button
                                   onClick={(e) => {
-                                    e.stopPropagation(); // Impede que o clique inicie o arraste
+                                    e.stopPropagation();
                                     setProjetoSelecionado(projeto);
                                   }}
                                   style={{
@@ -187,7 +182,7 @@ export default function KanbanPage() {
                                     right: '8px',
                                     background: 'transparent',
                                     border: 'none',
-                                    color: '#8b949e',
+                                    color: '#adb5bd',
                                     cursor: 'pointer',
                                     padding: '4px',
                                     display: 'flex',
@@ -195,28 +190,27 @@ export default function KanbanPage() {
                                     justifyContent: 'center',
                                     borderRadius: '4px',
                                   }}
-                                  onMouseEnter={(e) => e.currentTarget.style.color = '#00c4cc'}
-                                  onMouseLeave={(e) => e.currentTarget.style.color = '#8b949e'}
+                                  onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
+                                  onMouseLeave={(e) => e.currentTarget.style.color = '#adb5bd'}
                                   title="Ver Detalhes"
                                 >
-                                  {/* Ícone de olho (SVG simples) */}
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                     <circle cx="12" cy="12" r="3"></circle>
                                   </svg>
                                 </button>
 
-                                <h4 style={{ fontSize: '13px', fontWeight: 600, color: '#f0f6fc', marginBottom: '4px', lineHeight: 1.3, paddingRight: '24px' }}>
+                                <h4 style={{ fontSize: '13px', fontWeight: 600, color: '#e6edf3', marginBottom: '4px', lineHeight: 1.3, paddingRight: '24px' }}>
                                   {projeto.titulo}
                                 </h4>
-                                <p style={{ fontSize: '11px', color: '#8b949e', marginBottom: '8px' }}>
+                                <p style={{ fontSize: '11px', color: '#adb5bd', marginBottom: '8px' }}>
                                   {projeto.razao_social ?? 'OSC não informada'}
                                 </p>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid #2d333b' }}>
-                                  <span style={{ fontSize: '10px', color: '#6e7681' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid #343a40' }}>
+                                  <span style={{ fontSize: '10px', color: '#adb5bd' }}>
                                     {projeto.protocolo}
                                   </span>
-                                  <span style={{ fontSize: '10px', color: '#6e7681' }}>
+                                  <span style={{ fontSize: '10px', color: '#adb5bd' }}>
                                     {projeto.cidade ?? 'UF'}
                                   </span>
                                 </div>
@@ -235,7 +229,6 @@ export default function KanbanPage() {
         )}
       </PageContent>
 
-      {/* MODAL DE DETALHES */}
       <Modal
         isOpen={!!projetoSelecionado}
         onClose={() => setProjetoSelecionado(null)}

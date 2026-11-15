@@ -1,12 +1,10 @@
 import type { Request, Response } from 'express';
 import { supabase } from '../config/supabase.js';
 
-// Mesmos valores de STATUS_PROJETO no frontend.
 const STATUS_VALIDOS = ['rascunho', 'submetido', 'em_analise', 'aprovado', 'reprovado'];
 
-// Critérios de ordenação permitidos. Só estes valores chegam ao banco.
 const ORDENS: Record<string, { coluna: string; ascending: boolean } | undefined> = {
-  ranking: { coluna: 'classificacao_ranking', ascending: true },
+  ranking: { coluna: 'classificacao_ranking', ascending: false },
   valor: { coluna: 'valor_solicitado', ascending: true },
 };
 
@@ -24,7 +22,7 @@ export async function listarProjetos(req: Request, res: Response) {
     const busca = limparBusca(lerTexto(req.query.busca));
     const status = lerTexto(req.query.status);
     const area = limparBusca(lerTexto(req.query.area));
-    const leiId = lerTexto(req.query.lei_incentivo_id); // <-- Novo filtro
+    const leiId = lerTexto(req.query.lei_incentivo_id);
     const ordem = lerTexto(req.query.ordem) || 'ranking';
 
     if (status && !STATUS_VALIDOS.includes(status)) {
@@ -48,7 +46,7 @@ export async function listarProjetos(req: Request, res: Response) {
       query = query.ilike('area_atuacao', `%${area}%`);
     }
     if (leiId) {
-      query = query.eq('lei_incentivo_id', Number(leiId)); // <-- Aplica o filtro
+      query = query.eq('lei_incentivo_id', Number(leiId));
     }
 
     query = query.order(criterio.coluna, {
@@ -87,19 +85,31 @@ export async function buscarProjetoPorId(req: Request, res: Response) {
   }
 }
 
+// Gera um protocolo único baseado no ano e na contagem de projetos.
+async function gerarProtocolo(): Promise<string> {
+  const ano = new Date().getFullYear();
+  const { count } = await supabase
+    .from('projetos')
+    .select('*', { count: 'exact', head: true });
+  
+  const sequencial = String((count ?? 0) + 1).padStart(4, '0');
+  return `IGAM-${ano}-${sequencial}`;
+}
+
 export async function criarProjeto(req: Request, res: Response) {
   try {
     const dados = req.body ?? {};
 
     const titulo = lerTexto(dados.titulo);
-    const protocolo = lerTexto(dados.protocolo);
     const cnpj = lerTexto(dados.cnpj);
 
-    if (!titulo || !protocolo || !cnpj) {
+    if (!titulo || !cnpj) {
       return res.status(400).json({
-        error: 'Campos obrigatórios (título, protocolo, cnpj) não preenchidos.',
+        error: 'Campos obrigatórios (título, cnpj) não preenchidos.',
       });
     }
+
+    const protocolo = await gerarProtocolo();
 
     const { data, error } = await supabase
       .from('projetos')
@@ -109,13 +119,9 @@ export async function criarProjeto(req: Request, res: Response) {
           cnpj,
           titulo,
           status: 'rascunho',
-          data_submissao: new Date().toISOString(),
-          
-          // Campos existentes na tabela do Supabase (imagem)
           area_atuacao: dados.area_atuacao ?? null,
           impacto_social: dados.impacto_social ?? null,
           lei_incentivo_id: dados.lei_incentivo_id ? Number(dados.lei_incentivo_id) : null,
-          
           razao_social: dados.razao_social ?? null,
           tipo_entidade: dados.tipo_entidade ?? null,
           estado: dados.estado ?? null,
@@ -125,23 +131,17 @@ export async function criarProjeto(req: Request, res: Response) {
           telefone: dados.telefone ?? null,
           site_url: dados.site_url ?? null,
           sobre_instituicao: dados.sobre_instituicao ?? null,
-          
           valor_total: dados.valor_total ? Number(dados.valor_total) : null,
           teto_captacao: dados.teto_captacao ? Number(dados.teto_captacao) : null,
           valor_solicitado: dados.valor_solicitado ? Number(dados.valor_solicitado) : null,
           justificativa_pedido: dados.justificativa_pedido ?? null,
-          
-          // Aqui está o pulo do gato: o "Resumo Executivo" da tela vai para o campo "objetivo" do banco
-          objetivo: dados.objetivo ?? null, 
-          
+          objetivo: dados.objetivo ?? null,
           pessoas_alcancadas_estimativa: dados.pessoas_alcancadas_estimativa ? Number(dados.pessoas_alcancadas_estimativa) : null,
           pessoas_alcancadas_comprovadas: dados.pessoas_alcancadas_comprovadas ? Number(dados.pessoas_alcancadas_comprovadas) : null,
-          
           data_inicio_analise: dados.data_inicio_analise || null,
           data_fim_analise: dados.data_fim_analise || null,
           data_inicio_execucao: dados.data_inicio_execucao || null,
           data_fim_execucao: dados.data_fim_execucao || null,
-          
           tags: dados.tags ?? null,
         },
       ])
@@ -159,13 +159,24 @@ export async function criarProjeto(req: Request, res: Response) {
   }
 }
 
+// Define as transições permitidas a partir de cada status.
+// Se um status não estiver no mapa, ele é final (ex: aprovado, reprovado) e não pode mudar.
+const TRANSICOES_VALIDAS: Record<string, string[]> = {
+  rascunho: ['submetido'],
+  submetido: ['em_analise', 'reprovado'],
+  em_analise: ['aprovado', 'reprovado'],
+};
+
 export async function atualizarStatusHistorico(req: Request, res: Response) {
   try {
     const dados = req.body ?? {};
-    const projetoId = req.params.id ?? dados.id;
+    const projetoId = String(req.params.id ?? dados.id ?? '');
     const statusNovo = lerTexto(dados.status_novo);
-    const usuarioId = dados.usuario_id ?? null;
     const observacao = dados.observacao ?? null;
+    
+    // O usuário logado vem do token, nunca do corpo da requisição.
+    const authUser = res.locals.authUser as { id: string } | undefined;
+    const usuarioId = authUser?.id ?? null;
 
     if (!projetoId || !statusNovo) {
       return res.status(400).json({ error: 'ID do projeto e status_novo são obrigatórios.' });
@@ -183,11 +194,28 @@ export async function atualizarStatusHistorico(req: Request, res: Response) {
 
     if (errBusca) return res.status(404).json({ error: 'Projeto não encontrado.' });
 
-    const statusAnterior = projetoAtual.status;
+    const statusAnterior = projetoAtual.status as string;
+
+    const permitidos = TRANSICOES_VALIDAS[statusAnterior] ?? [];
+    if (!permitidos.includes(statusNovo)) {
+      return res.status(400).json({ 
+        error: `Transição inválida: não é possível ir de "${statusAnterior}" para "${statusNovo}".` 
+      });
+    }
+
+    // Prepara os dados da atualização. Se for a primeira submissão, preenche a data.
+    const dadosAtualizacao: Record<string, unknown> = {
+      status: statusNovo,
+      data_atualizacao: new Date(),
+    };
+    
+    if (statusAnterior === 'rascunho' && statusNovo === 'submetido') {
+      dadosAtualizacao.data_submissao = new Date();
+    }
 
     const { data: projetoAtualizado, error: errUpdate } = await supabase
       .from('projetos')
-      .update({ status: statusNovo, data_atualizacao: new Date() })
+      .update(dadosAtualizacao)
       .eq('id', projetoId)
       .select();
 
@@ -209,59 +237,6 @@ export async function atualizarStatusHistorico(req: Request, res: Response) {
     return res.status(200).json({
       message: 'Status atualizado e histórico registrado com sucesso.',
       data: projetoAtualizado,
-    });
-  } catch {
-    return res.status(500).json({ error: 'Erro interno no servidor.' });
-  }
-}
-
-export async function listarDocumentos(req: Request, res: Response) {
-  try {
-    const { id } = req.params;
-
-    const { data, error } = await supabase
-      .from('documentos')
-      .select('*')
-      .eq('projeto_id', id);
-
-    if (error) return res.status(400).json({ error: error.message });
-
-    return res.status(200).json(data);
-  } catch {
-    return res.status(500).json({ error: 'Erro interno no servidor.' });
-  }
-}
-
-export async function adicionarDocumento(req: Request, res: Response) {
-  try {
-    const { id } = req.params;
-    const dados = req.body ?? {};
-
-    const nomeOriginal = lerTexto(dados.nome_original);
-    const caminhoArquivo = lerTexto(dados.caminho_arquivo);
-
-    if (!nomeOriginal || !caminhoArquivo) {
-      return res.status(400).json({ error: 'Nome original e caminho do arquivo são obrigatórios.' });
-    }
-
-    const { data, error } = await supabase
-      .from('documentos')
-      .insert([
-        {
-          projeto_id: id,
-          categoria: dados.categoria ?? null,
-          nome_original: nomeOriginal,
-          caminho_arquivo: caminhoArquivo,
-          tamanho_bytes: dados.tamanho_bytes ?? null,
-        },
-      ])
-      .select();
-
-    if (error) return res.status(400).json({ error: error.message });
-
-    return res.status(201).json({
-      message: 'Documento adicionado com sucesso.',
-      data: data[0],
     });
   } catch {
     return res.status(500).json({ error: 'Erro interno no servidor.' });
@@ -293,7 +268,6 @@ export async function atualizarStatusKanban(req: Request, res: Response) {
       return res.status(400).json({ error: 'Status é obrigatório.' });
     }
 
-    // Valida se o status é um dos permitidos no banco
     const statusValidos = ['rascunho', 'submetido', 'em_analise', 'aprovado', 'reprovado'];
     if (!statusValidos.includes(status)) {
       return res.status(400).json({ error: 'Status inválido.' });
@@ -311,5 +285,69 @@ export async function atualizarStatusKanban(req: Request, res: Response) {
     return res.json(data);
   } catch {
     return res.status(500).json({ error: 'Erro ao atualizar status.' });
+  }
+}
+
+export async function listarCategorias(req: Request, res: Response) {
+  try {
+    const { data, error } = await supabase
+      .from('projetos')
+      .select('area_atuacao');
+
+    if (error) {
+      console.error('Erro ao buscar categorias:', error);
+      return res.json([]);
+    }
+
+    const categorias = Array.from(
+      new Set((data ?? []).map((p) => p.area_atuacao).filter(Boolean))
+    ).sort() as string[];
+
+    return res.json(categorias);
+  } catch (err) {
+    console.error('Erro interno ao buscar categorias:', err);
+    return res.json([]);
+  }
+}
+
+export async function excluirProjeto(req: Request, res: Response) {
+  try {
+    const id = String(req.params.id);
+
+    const { data: projeto, error: buscaError } = await supabase
+      .from('projetos')
+      .select('id')
+      .eq('id', id)
+      .single();
+
+    if (buscaError || !projeto) {
+      return res.status(404).json({ error: 'Projeto não encontrado.' });
+    }
+
+    const { data: documentos } = await supabase
+      .from('documentos')
+      .select('caminho_arquivo')
+      .eq('projeto_id', id);
+
+    if (documentos && documentos.length > 0) {
+      const caminhos = documentos.map((d) => d.caminho_arquivo);
+      await supabase.storage.from('egam-documentos').remove(caminhos);
+    }
+
+    // O histórico precisa ser removido antes do projeto para não violar a chave estrangeira.
+    await supabase.from('historico_status').delete().eq('projeto_id', id);
+
+    await supabase.from('documentos').delete().eq('projeto_id', id);
+
+    const { error: deleteError } = await supabase
+      .from('projetos')
+      .delete()
+      .eq('id', id);
+
+    if (deleteError) return res.status(400).json({ error: deleteError.message });
+
+    return res.status(204).send();
+  } catch {
+    return res.status(500).json({ error: 'Erro ao excluir projeto.' });
   }
 }

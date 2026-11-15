@@ -10,13 +10,12 @@ export interface Documento {
   data_envio: string | null;
 }
 
-const TAMANHO_MAXIMO = 10 * 1024 * 1024; // 10 MB
+const TAMANHO_MAXIMO = 10 * 1024 * 1024;
 
 function token(): string | null {
   return localStorage.getItem('igam_token');
 }
 
-// Retorna a mensagem de erro, ou null se o arquivo for válido.
 export function validarPdf(arquivo: File): string | null {
   if (arquivo.type !== 'application/pdf') return 'Envie apenas arquivos PDF.';
   if (arquivo.size > TAMANHO_MAXIMO) return 'O arquivo deve ter no máximo 10 MB.';
