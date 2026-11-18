@@ -114,7 +114,7 @@ export default function HomePage() {
               <MetricCard title="Vidas Impactadas" value={vidasImpactadas.toLocaleString('pt-BR')} footer="Soma de todos os projetos" iconContent="👥" iconColor="#00c4cc" />
             </div>
 
-            <div style={{ background: '#212529', border: '1px solid #343a40', borderRadius: '16px', overflow: 'hidden' }}>
+            <div style={{ background: '#212529', border: '1px solid #343a40', borderRadius: '8px', overflow: 'hidden' }}>
               <div style={{ padding: '20px 24px', borderBottom: '1px solid #343a40', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                 <span style={{ fontSize: '13px', color: '#adb5bd' }}>Mostrando projetos recentes</span>
               </div>
@@ -196,7 +196,7 @@ function MetricCard({
   iconColor: string;
 }) {
   return (
-    <div style={{ background: '#212529', border: '1px solid #343a40', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
+    <div style={{ background: '#212529', border: '1px solid #343a40', borderRadius: '8px', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '16px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <span style={{ fontSize: '13px', fontWeight: 500, color: '#adb5bd' }}>{title}</span>
         <span style={{ fontSize: '20px', fontWeight: 700, color: iconColor, lineHeight: 1 }}>{iconContent}</span>

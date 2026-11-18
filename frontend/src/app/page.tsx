@@ -18,7 +18,7 @@ export default function SelecaoPerfilPage() {
     }}>
       <div style={{ textAlign: 'center', marginBottom: '48px' }}>
         <h1 style={{ fontSize: '32px', fontWeight: 700, color: '#e6edf3', marginBottom: '8px' }}>
-          Bem-vindo ao <span style={{ color: '#adb5bd' }}>EGAM Workflow</span>
+          Bem-vindo ao <span style={{ color: '#00c4cc' }}>EGAM Workflow</span> {/* <-- Azul claro */}
         </h1>
         <p style={{ fontSize: '16px', color: '#adb5bd' }}>
           Selecione o tipo de acesso para continuar
@@ -33,6 +33,7 @@ export default function SelecaoPerfilPage() {
         width: '100%',
         maxWidth: '800px'
       }}>
+        {/* Card IGAM */}
         <button
           onClick={() => router.push('/login')}
           style={{
@@ -41,27 +42,18 @@ export default function SelecaoPerfilPage() {
             padding: '40px 24px',
             backgroundColor: '#212529',
             border: '1px solid #343a40',
-            borderRadius: '16px',
+            borderRadius: '6px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             gap: '16px',
             cursor: 'pointer',
-            transition: 'transform 0.2s, border-color 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.borderColor = '#6c757d';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.borderColor = '#343a40';
           }}
         >
           <div style={{ 
             width: '64px', 
             height: '64px', 
-            borderRadius: '16px', 
+            borderRadius: '6px',
             backgroundColor: 'rgba(255, 255, 255, 0.05)',
             display: 'flex',
             alignItems: 'center',
@@ -71,11 +63,16 @@ export default function SelecaoPerfilPage() {
             <Building2 size={32} />
           </div>
           <div style={{ textAlign: 'center' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 600, color: '#e6edf3', marginBottom: '4px' }}>Equipe IGAM</h2>
-            <p style={{ fontSize: '13px', color: '#adb5bd' }}>Acesso administrativo<br/>Gestão de projetos e usuários</p>
+            <h2 style={{ fontSize: '20px', fontWeight: 600, color: '#00c4cc', marginBottom: '4px' }}>
+              Equipe IGAM {/* <-- Azul claro */}
+            </h2>
+            <p style={{ fontSize: '13px', color: '#adb5bd' }}>
+              Acesso administrativo<br/>Gestão de projetos e usuários
+            </p>
           </div>
         </button>
 
+        {/* Card ONG */}
         <button
           onClick={() => router.push('/ong/entrar')}
           style={{
@@ -84,27 +81,18 @@ export default function SelecaoPerfilPage() {
             padding: '40px 24px',
             backgroundColor: '#212529',
             border: '1px solid #343a40',
-            borderRadius: '16px',
+            borderRadius: '4px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             gap: '16px',
             cursor: 'pointer',
-            transition: 'transform 0.2s, border-color 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-4px)';
-            e.currentTarget.style.borderColor = '#6c757d';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.borderColor = '#343a40';
           }}
         >
           <div style={{ 
             width: '64px', 
             height: '64px', 
-            borderRadius: '16px', 
+            borderRadius: '4px',
             backgroundColor: 'rgba(255, 255, 255, 0.05)',
             display: 'flex',
             alignItems: 'center',
@@ -114,8 +102,12 @@ export default function SelecaoPerfilPage() {
             <Shield size={32} />
           </div>
           <div style={{ textAlign: 'center' }}>
-            <h2 style={{ fontSize: '20px', fontWeight: 600, color: '#e6edf3', marginBottom: '4px' }}>Sou ONG</h2>
-            <p style={{ fontSize: '13px', color: '#adb5bd' }}>Acesso para organizações<br/>Envio e acompanhamento de projetos</p>
+            <h2 style={{ fontSize: '20px', fontWeight: 600, color: '#00c4cc', marginBottom: '4px' }}>
+              Sou ONG {/* <-- Azul claro */}
+            </h2>
+            <p style={{ fontSize: '13px', color: '#adb5bd' }}>
+              Acesso para organizações<br/>Envio e acompanhamento de projetos
+            </p>
           </div>
         </button>
       </div>

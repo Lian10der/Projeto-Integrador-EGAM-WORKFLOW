@@ -46,14 +46,16 @@ export function Sidebar() {
         }}
       >
         {aberta && (
-          <div style={{ flex: 1 }}>
-            <h2 style={{ fontSize: '14px', fontWeight: 700, color: '#e6edf3', lineHeight: '1.3' }}>
-              Instituto Genésio <span style={{ color: '#adb5bd' }}>Antônio Mendes</span>
-            </h2>
-            <span style={{ fontSize: '11px', color: '#6c757d', marginTop: '4px', display: 'block' }}>
-              Gestão de Projetos Sociais
-            </span>
-          </div>
+          <img 
+            src="/logo-igam.png" 
+            alt="Instituto Genésio Antônio Mendes" 
+            style={{ 
+              width: '100%',
+              maxWidth: '160px',
+              height: 'auto',
+              objectFit: 'contain'
+            }} 
+          />
         )}
 
         <button
@@ -90,7 +92,7 @@ export function Sidebar() {
                 justifyContent: aberta ? 'flex-start' : 'center',
                 gap: '12px',
                 padding: aberta ? '10px 14px' : '10px 0',
-                borderRadius: '8px',
+                borderRadius: '4px',
                 fontSize: aberta ? '14px' : '16px',
                 fontWeight: isActive ? 600 : 500,
                 color: isActive ? '#ffffff' : '#adb5bd',
@@ -125,7 +127,7 @@ export function Sidebar() {
             alignItems: 'center',
             justifyContent: aberta ? 'flex-start' : 'center',
             gap: '12px',
-            borderRadius: '8px',
+            borderRadius: '4px',
           }}
         >
           <LogOut size={18} color="#ee5268" />

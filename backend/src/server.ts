@@ -26,7 +26,7 @@ app.use(
 app.use(express.json());
 
 app.get('/', (_req, res) => {
-  res.json({ message: 'IGAM Workflow API funcionando' });
+  res.json({ message: 'EGAM Workflow API funcionando' });
 });
 
 // Login de administradores (público)

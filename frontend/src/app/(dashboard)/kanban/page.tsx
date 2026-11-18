@@ -10,6 +10,7 @@ import { Modal } from '@/components/ui/Modal';
 import { ProjetoDetalhe } from '@/components/projetos/ProjetoDetalhe';
 import type { Projeto, StatusProjeto } from '@/types/projeto';
 import { API_URL } from '@/lib/sessao';
+import styles from './kanban.module.css';
 
 const COLUNAS: { id: StatusProjeto; titulo: string; cor: string }[] = [
   { id: 'rascunho', titulo: 'Rascunho', cor: '#6c757d' },
@@ -39,7 +40,7 @@ export default function KanbanPage() {
         return res.json();
       })
       .then(data => setProjetos(data))
-      .catch(err => setErro('Erro ao carregar projetos.'))
+      .catch(() => setErro('Erro ao carregar projetos.'))
       .finally(() => setLoading(false));
   }, [router]);
 
@@ -68,7 +69,7 @@ export default function KanbanPage() {
       });
 
       if (!res.ok) throw new Error('Falha ao salvar status.');
-    } catch (error) {
+    } catch {
       alert('Erro ao salvar a mudança. O card voltará para a posição original.');
       window.location.reload();
     }
@@ -91,17 +92,8 @@ export default function KanbanPage() {
 
         {!loading && !erro && (
           <DragDropContext onDragEnd={onDragEnd}>
-            <div
-              className="kanban-board-container"
-              style={{
-                display: 'flex',
-                gap: '16px',
-                width: '100%',
-                height: 'calc(100vh - 200px)',
-                overflowX: 'auto',
-                paddingBottom: '16px'
-              }}
-            >
+            {/* Container das colunas: flex row para ficarem lado a lado */}
+            <div style={{ display: 'flex', gap: '16px', width: '100%', height: 'calc(100vh - 200px)', overflowX: 'auto', paddingBottom: '16px' }}>
               {COLUNAS.map(coluna => (
                 <div
                   key={coluna.id}
@@ -109,29 +101,16 @@ export default function KanbanPage() {
                     flex: 1,
                     minWidth: '240px',
                     backgroundColor: '#1a1d21',
-                    borderRadius: '12px',
+                    borderRadius: '4px',
                     border: '1px solid #343a40',
                     display: 'flex',
-                    flexDirection: 'column'
+                    flexDirection: 'column',
                   }}
                 >
-                  <div style={{
-                    padding: '12px 16px',
-                    borderBottom: '1px solid #343a40',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}>
+                  <div style={{ padding: '12px 16px', borderBottom: '1px solid #343a40', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: coluna.cor }} />
                     <h3 style={{ fontSize: '13px', fontWeight: 600, color: '#e6edf3' }}>{coluna.titulo}</h3>
-                    <span style={{
-                      marginLeft: 'auto',
-                      fontSize: '11px',
-                      backgroundColor: '#212529',
-                      padding: '2px 8px',
-                      borderRadius: '12px',
-                      color: '#adb5bd'
-                    }}>
+                    <span style={{ marginLeft: 'auto', fontSize: '11px', backgroundColor: '#212529', padding: '2px 8px', borderRadius: '4px', color: '#adb5bd' }}>
                       {projetosPorColuna(coluna.id).length}
                     </span>
                   </div>
@@ -146,10 +125,10 @@ export default function KanbanPage() {
                           padding: '12px',
                           overflowY: 'auto',
                           backgroundColor: snapshot.isDraggingOver ? 'rgba(255, 255, 255, 0.02)' : 'transparent',
-                          transition: 'background-color 0.2s',
                           display: 'flex',
                           flexDirection: 'column',
-                          gap: '10px'
+                          gap: '10px',
+                          minHeight: '200px',
                         }}
                       >
                         {projetosPorColuna(coluna.id).map((projeto, index) => (
@@ -159,17 +138,9 @@ export default function KanbanPage() {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                style={{
-                                  ...provided.draggableProps.style,
-                                  backgroundColor: '#212529',
-                                  border: '1px solid #343a40',
-                                  borderRadius: '8px',
-                                  padding: '12px',
-                                  cursor: 'grab',
-                                  opacity: snapshot.isDragging ? 0.8 : 1,
-                                  boxShadow: snapshot.isDragging ? '0 8px 24px rgba(0,0,0,0.5)' : 'none',
-                                  position: 'relative',
-                                }}
+                                style={provided.draggableProps.style}
+                                className={styles.card}
+                                data-is-dragging={snapshot.isDragging}
                               >
                                 <button
                                   onClick={(e) => {
@@ -207,12 +178,8 @@ export default function KanbanPage() {
                                   {projeto.razao_social ?? 'OSC não informada'}
                                 </p>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid #343a40' }}>
-                                  <span style={{ fontSize: '10px', color: '#adb5bd' }}>
-                                    {projeto.protocolo}
-                                  </span>
-                                  <span style={{ fontSize: '10px', color: '#adb5bd' }}>
-                                    {projeto.cidade ?? 'UF'}
-                                  </span>
+                                  <span style={{ fontSize: '10px', color: '#adb5bd' }}>{projeto.protocolo}</span>
+                                  <span style={{ fontSize: '10px', color: '#adb5bd' }}>{projeto.cidade ?? 'UF'}</span>
                                 </div>
                               </div>
                             )}
@@ -237,7 +204,6 @@ export default function KanbanPage() {
       >
         {projetoSelecionado && <ProjetoDetalhe projeto={projetoSelecionado} />}
       </Modal>
-
     </PageContainer>
   );
 }
