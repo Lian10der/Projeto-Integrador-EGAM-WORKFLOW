@@ -1,0 +1,15 @@
+/* Apenas estilos do card. A estrutura das colunas é inline no page.tsx */
+.card {
+  background-color: #212529;
+  border: 1px solid #343a40;
+  border-radius: 4px;
+  padding: 12px;
+  cursor: grab;
+  /* Posição relativa é necessária para o botão de detalhes */
+  position: relative;
+}
+
+.card[data-is-dragging='true'] {
+  opacity: 0.9;
+  box-shadow: none !important;
+}

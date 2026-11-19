@@ -52,7 +52,7 @@ export function ProjetoFiltros({ filtros, onChange, leis, categorias }: ProjetoF
   };
 
   return (
-    <aside style={{ width: '280px', minWidth: '280px', backgroundColor: '#1a1d21', borderRadius: '12px', border: '1px solid #343a40', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <aside style={{ width: '280px', minWidth: '280px', backgroundColor: '#1a1d21', borderRadius: '6px', border: '1px solid #343a40', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
       
       <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#e6edf3' }}>Filtros</h3>
 

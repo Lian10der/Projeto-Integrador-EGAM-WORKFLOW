@@ -50,12 +50,15 @@ export async function login(req: Request, res: Response) {
 
 // Devolve o usuário logado. Precisa do requireAuth antes na rota.
 export async function me(_req: Request, res: Response) {
-  const authUser = res.locals.authUser as { id: string; email?: string };
+  const authUser = res.locals.authUser as { id: string; email?: string; user_metadata?: any };
   const perfil = await buscarPerfil(authUser.id);
+
+  // Tenta pegar o nome do perfil, depois do user_metadata, e por último o e-mail
+  const nome = perfil?.nome || authUser.user_metadata?.nome || authUser.email?.split('@')[0] || 'Usuário';
 
   return res.json({
     id: perfil?.id ?? null,
-    nome: perfil?.nome ?? authUser.email ?? 'Usuário',
+    nome: nome,
     email: perfil?.email ?? authUser.email ?? '',
     status: perfil?.status ?? null,
   });

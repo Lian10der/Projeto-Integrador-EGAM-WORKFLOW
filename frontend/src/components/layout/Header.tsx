@@ -34,7 +34,7 @@ export function Header() {
 
   const getHelpContent = () => {
     if (pathname === '/home') {
-      return 'Esta é a página Inicial. Aqui você acompanha os indicadores gerais e os projetos recentes.';
+      return 'Esta é a página inicial do EGAM Workflow. Aqui você acompanha os indicadores gerais e os projetos recentes.';
     }
     if (pathname.includes('/projetos')) {
       return 'Explorador de Projetos. Use a busca ou os filtros laterais para encontrar projetos.';
@@ -45,7 +45,7 @@ export function Header() {
     if (pathname.includes('/kanban')) {
       return 'Quadro Kanban. Arraste os cards para atualizar o status dos projetos.';
     }
-    return 'Sistema centralizado de gestão e triagem de projetos sociais do IGAM.';
+    return 'EGAM Workflow - Sistema de gestão e triagem de projetos sociais do Instituto Genésio Antônio Mendes.';
   };
 
   return (
@@ -70,8 +70,8 @@ export function Header() {
           style={{
             width: '36px',
             height: '36px',
-            borderRadius: '8px',
-            background: '#238636',
+            borderRadius: '6px',
+            background: '#495057', // <-- Cinza neutro
             color: '#fff',
             display: 'flex',
             alignItems: 'center',
@@ -102,7 +102,7 @@ export function Header() {
               width: '100%',
               background: '#212529',
               border: '1px solid #343a40',
-              borderRadius: '8px',
+              borderRadius: '4px',
               padding: '10px 12px 10px 40px',
               color: '#e6edf3',
               fontSize: '13px',
@@ -113,13 +113,13 @@ export function Header() {
         <button
           onClick={() => router.push('/projetos?novo=true')}
           style={{
-            background: '#238636',
-            color: '#fff',
+            background: '#00c4cc',
+            color: '#ffffff',
             border: 'none',
-            borderRadius: '8px',
+            borderRadius: '4px',
             padding: '10px 16px',
             fontSize: '13px',
-            fontWeight: 600,
+            fontWeight: 700,
             cursor: 'pointer',
             whiteSpace: 'nowrap',
           }}
@@ -135,7 +135,7 @@ export function Header() {
             style={{
               background: '#212529',
               border: '1px solid #343a40',
-              borderRadius: '8px',
+              borderRadius: '4px',
               width: '38px',
               height: '38px',
               display: 'flex',
@@ -158,7 +158,7 @@ export function Header() {
             />
           </button>
           {notifOpen && (
-            <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: '8px', width: '320px', background: '#212529', border: '1px solid #343a40', borderRadius: '12px', boxShadow: '0 8px 24px rgba(0,0,0,0.5)', overflow: 'hidden', zIndex: 100 }}>
+            <div style={{ position: 'absolute', right: 0, top: '100%', marginTop: '8px', width: '320px', background: '#212529', border: '1px solid #343a40', borderRadius: '6px', boxShadow: '0 8px 24px rgba(0,0,0,0.5)', overflow: 'hidden', zIndex: 100 }}>
               <div style={{ padding: '14px 16px', borderBottom: '1px solid #343a40', fontWeight: 600, fontSize: '14px', color: '#e6edf3' }}>Notificações</div>
               <div style={{ padding: '16px', fontSize: '13px', color: '#adb5bd' }}>Nenhuma notificação no momento.</div>
             </div>
@@ -170,7 +170,7 @@ export function Header() {
           style={{
             background: '#212529',
             border: '1px solid #343a40',
-            borderRadius: '8px',
+            borderRadius: '4px',
             width: '38px',
             height: '38px',
             display: 'flex',
@@ -185,13 +185,24 @@ export function Header() {
 
       {helpOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#212529', border: '1px solid #343a40', borderRadius: '16px', width: '100%', maxWidth: '420px', padding: '24px' }}>
+          <div style={{ background: '#212529', border: '1px solid #343a40', borderRadius: '8px', width: '100%', maxWidth: '420px', padding: '24px' }}>
             <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#e6edf3', marginBottom: '16px' }}>Ajuda</h3>
             <p style={{ fontSize: '14px', color: '#adb5bd', lineHeight: '1.6', marginBottom: '24px' }}>
               {getHelpContent()}
             </p>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => setHelpOpen(false)} style={{ background: '#238636', border: 'none', color: '#fff', padding: '10px 20px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
+              <button
+                onClick={() => setHelpOpen(false)}
+                style={{
+                  background: '#00c4cc', // <-- Azul claro (ciano)
+                  border: 'none',
+                  color: '#0e1116',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
                 Entendi
               </button>
             </div>

@@ -37,8 +37,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#0e1116' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#1a1d21' }}>
       
+      {/* Lado Esquerdo: Formulário */}
       <div
         style={{
           flex: 1,
@@ -54,10 +55,10 @@ export default function LoginPage() {
           
           <div style={{ marginBottom: '40px' }}>
             <h1 style={{ fontSize: '32px', fontWeight: 800, color: '#e6edf3', lineHeight: 1.1, marginBottom: '12px' }}>
-              Instituto Genésio<br />Antônio Mendes
+              EGAM Workflow
             </h1>
             <p style={{ fontSize: '14px', color: '#adb5bd' }}>
-              Digite o usuário e senha do administrador
+              Acesse o sistema de gestão de projetos do Instituto Genésio Antônio Mendes
             </p>
           </div>
 
@@ -66,27 +67,24 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '12px', color: '#adb5bd', marginBottom: '8px' }}>
-                Nome do Administrador
+                E-mail do Administrador
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Usuário ou e-mail"
+                placeholder="seu@email.com"
                 required
                 style={{
                   width: '100%',
                   padding: '14px 16px',
                   backgroundColor: '#212529',
                   border: '1px solid #343a40',
-                  borderRadius: '8px',
+                  borderRadius: '4px',
                   color: '#e6edf3',
                   fontSize: '14px',
                   outline: 'none',
-                  transition: 'border-color 0.2s',
                 }}
-                onFocus={(e) => e.target.style.borderColor = '#adb5bd'}
-                onBlur={(e) => e.target.style.borderColor = '#343a40'}
               />
             </div>
 
@@ -106,14 +104,11 @@ export default function LoginPage() {
                     padding: '14px 16px',
                     backgroundColor: '#212529',
                     border: '1px solid #343a40',
-                    borderRadius: '8px',
+                    borderRadius: '4px',
                     color: '#e6edf3',
                     fontSize: '14px',
                     outline: 'none',
-                    transition: 'border-color 0.2s',
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#adb5bd'}
-                  onBlur={(e) => e.target.style.borderColor = '#343a40'}
                 />
                 <button
                   type="button"
@@ -145,7 +140,7 @@ export default function LoginPage() {
                 backgroundColor: '#00c4cc',
                 color: '#0e1116',
                 border: 'none',
-                borderRadius: '8px',
+                borderRadius: '4px',
                 fontSize: '14px',
                 fontWeight: 700,
                 cursor: loading ? 'not-allowed' : 'pointer',
@@ -164,6 +159,7 @@ export default function LoginPage() {
         </div>
       </div>
 
+      {/* Lado Direito: Painel Visual com a Logo */}
       <div
         style={{
           flex: 1,
@@ -175,34 +171,16 @@ export default function LoginPage() {
           borderLeft: '1px solid #343a40',
         }}
       >
-        <div style={{ textAlign: 'center', zIndex: 1 }}>
-          <div style={{ 
-            width: '100px', 
-            height: '100px', 
-            backgroundColor: '#ffffff', 
-            borderRadius: '24px', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            margin: '0 auto 24px auto',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-          }}>
-            {/* Logo (substitua pelo caminho real da imagem) */}
-            <img 
-              src="/logo.png" 
-              alt="IGAM Logo" 
-              style={{ width: '80%', height: '80%', objectFit: 'contain' }} 
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none';
-              }}
-            />
-            {/* Fallback */}
-            <span style={{ fontSize: '36px', color: '#0e1116', fontWeight: '900', letterSpacing: '-1px', position: 'absolute' }}>IG</span>
-          </div>
-          <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#e6edf3', letterSpacing: '1.5px', lineHeight: 1.2 }}>
-            INSTITUTO<br />GENÉSIO<br />A. MENDES
-          </h2>
-        </div>
+        <img 
+          src="/logo-igam.png" 
+          alt="Instituto Genésio Antônio Mendes" 
+          style={{ 
+            width: '446px',
+            maxWidth: '80%',
+            height: 'auto',
+            objectFit: 'contain'
+          }} 
+        />
       </div>
 
     </div>
