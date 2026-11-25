@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { API_URL } from '@/lib/sessao';
 
 export default function EntrarOngPage() {
@@ -152,6 +153,13 @@ export default function EntrarOngPage() {
               {loading ? 'ENTRANDO...' : 'ENTRAR'}
             </button>
           </form>
+
+          <p style={{ fontSize: '13px', color: '#adb5bd', textAlign: 'center', marginTop: '24px' }}>
+            Ainda não tem acesso?{' '}
+            <Link href="/ong/cadastrar" style={{ color: '#00c4cc', fontWeight: 700 }}>
+              Cadastre sua ONG
+            </Link>
+          </p>
 
           <p style={{ fontSize: '11px', color: '#6c757d', textAlign: 'center', marginTop: '60px' }}>
             Instituto Genésio Antônio Mendes 2026 © All rights reserved.

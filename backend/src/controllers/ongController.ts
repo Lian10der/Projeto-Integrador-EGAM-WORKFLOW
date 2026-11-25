@@ -132,6 +132,47 @@ export async function criarOngComSenha(req: Request, res: Response) {
   }
 }
 
+export async function registrarOng(req: Request, res: Response) {
+  const nome = typeof req.body?.nome === 'string' ? req.body.nome.trim() : '';
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  const senha = typeof req.body?.senha === 'string' ? req.body.senha : '';
+  const cnpj = typeof req.body?.cnpj === 'string' ? somenteDigitos(req.body.cnpj) : '';
+
+  if (!nome || !email || !senha || !cnpj) {
+    return res.status(400).json({ error: 'Nome, e-mail, senha e CNPJ são obrigatórios.' });
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: 'Informe um e-mail válido.' });
+  }
+
+  if (senha.length < 6) {
+    return res.status(400).json({ error: 'A senha deve ter pelo menos 6 caracteres.' });
+  }
+
+  if (!cnpjValido(cnpj)) {
+    return res.status(400).json({ error: 'Informe um CNPJ válido.' });
+  }
+
+  const { error } = await supabase.auth.admin.createUser({
+    email,
+    password: senha,
+    email_confirm: true,
+    app_metadata: {
+      papel: 'ong',
+      cnpj: formatarCnpj(cnpj),
+      razao_social: nome,
+      status_aprovacao: 'PENDENTE',
+    },
+  });
+
+  if (error) return res.status(400).json({ error: error.message });
+
+  return res.status(201).json({
+    message: 'Cadastro realizado. Aguarde a aprovação do IGAM para acessar o sistema.',
+  });
+}
+
 export async function editarOng(req: Request, res: Response) {
   try {
     const email = String(req.params.email ?? '').trim().toLowerCase();

@@ -35,6 +35,11 @@ export async function login(req: Request, res: Response) {
     return res.status(401).json({ error: 'E-mail ou senha inválidos.' });
   }
 
+  const metadata = data.user.app_metadata ?? {};
+  if (metadata.papel === 'ong' && metadata.status_aprovacao !== 'APROVADA') {
+    return res.status(403).json({ error: 'Seu cadastro está aguardando aprovação pelo IGAM.' });
+  }
+
   const perfil = await buscarPerfil(data.user.id);
 
   return res.json({

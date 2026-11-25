@@ -25,6 +25,7 @@ O projeto segue rigorosamente o manual de identidade visual e as diretrizes grá
 
 ### Para OSCs
 
+- [x] Cadastro de ONG com validação de CNPJ e aprovação prévia do IGAM
 - [x] Acesso público ao formulário de submissão (sem exigência de cadastro prévio)
 - [x] Formulário estruturado em etapas orientadas
 - [x] Cadastro de informações da instituição
